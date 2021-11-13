@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ssotools-api"
+version = "0.1.0"
+description = ""
+authors = ["Will Webberley <will@seastorm.co>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = "^1.1.2"
+gunicorn = "^20.1.0"
+bcrypt = "^3.2.0"
+dnspython = "^2.1.0"
+PyJWT = "^2.0.1"
+pymongo = "^3.11.3"
+pyOpenSSL = "^20.0.1"
+requests = "^2.25.1"
+Flask-Cors = "^3.0.10"
+Werkzeug = "^1.0.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

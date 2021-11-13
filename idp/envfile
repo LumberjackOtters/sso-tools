@@ -1,0 +1,2 @@
+export MONGO_URL="mongodb://localhost"
+export MONGO_DATABASE="ssotools"
