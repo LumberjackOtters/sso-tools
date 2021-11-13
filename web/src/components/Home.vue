@@ -101,11 +101,10 @@
       <v-layout :justify-center="true">
         <v-flex xs12 sm10 md8 lg6>
           <h1>👋 Hi there, thanks for visiting</h1>
-          <p>SSO Tools is created and maintained by a solo developer. During my work as part of a growing startup selling enterprise SaaS, the need for providing larger organisations with federated authentication became very apparent.</p>
-          <p>I wasn't familiar with SSO or SAML2, and so I spent a lot of my spare time reading-up and learning about the different approaches, with a focus on security whilst also making set-up easy for our customers.</p>
-          <p>Testing our implementations was tricky, as there didn't exist a simple service for creating demo IdPs for testing the various parts of the SSO mechanism, and ones that did exist were too complex for our needs. So, in my spare time, I began working on SSO Tools so that we could easily test out our sign-on and logout flows across different use-cases.</p>
-          <p>Since I built and maintain it for my needs anyway, I thought it could be helpful to also make it available to others who may be in a similar situation.</p>    
-          <p>If you have any questions about the service, or need any support, please get in touch using <a href='https://twitter.com/willwebberley' target='_blank' rel='noopener noreferrer'>Twitter</a>. <strong>I hope you find it useful!</strong></p>
+          <p>SSO Tools is created and maintained by a solo developer. During my work as part of a growing startup selling enterprise SaaS, the need for providing larger organisations with federated authentication became hugely important.</p>
+          <p>I spent a lot of my spare time reading-up and learning about the different approaches to SSO via SAML2, with a focus on security whilst also making set-up easy for our customers.</p>
+          <p>In my spare time I began working on SSO Tools so that I could easily test sign-on and logout flows across different use-cases.</p>
+          <p>SSO Tools is free and open-source software, and you can <a href='https://git.wilw.dev/seastorm/sso-tools' target='_blank' rel='noopener noreferrer'>check out the source code</a> if you are interested. <strong>I hope you find it useful!</strong></p>
         </v-flex>
       </v-layout>
 
