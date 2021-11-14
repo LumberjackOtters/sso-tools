@@ -72,7 +72,7 @@ def get(user, include):
 def get_one(user, id):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(query)
+  idp = db.idps.find_one(id)
   if not idp: raise errors.NotFound('The IdP could not be found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t view this IdP')
   idp['users'] = list(db.idpUsers.find({'idp': idp['_id']}, {'firstName': 1, 'lastName': 1, 'email': 1}))
