@@ -56,6 +56,8 @@
                 </v-list-tile>
               </v-list>
           </v-card>
+
+          <v-btn block color='secondary' style="margin-top: 15px;" :href="`https://idp.sso.tools/${idp.code}`" target="_blank"><v-icon>open_in_new</v-icon> Open IdP dashboard</v-btn>
         </v-flex>
 
         <v-flex md8>
