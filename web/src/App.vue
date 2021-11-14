@@ -232,7 +232,7 @@ export default {
       this.$store.commit('login', true);
       localStorage.setItem('apiToken', token);
       api.token = token;
-      api.req('GET', '/users/me', null, u => this.$store.commit('setUser', u));
+      api.req('GET', '/users/me', null, u => this.$store.commit('setUser', u), () => this.logout());
       this.$router.push('/dashboard');
     },
     login() {
