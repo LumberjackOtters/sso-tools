@@ -85,7 +85,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
     key: thisIdp.saml.privateKey,
     cert: thisIdp.saml.certificate,
     issuer: `https://idp.sso.tools/${thisIdp.code}`,
-    recipient: thisSp.entityId,
+    recipient: thisSp.recipient || thisSp.callbackUrl,
     audiences: thisSp.entityId,
     inResponseTo: requestId,
     authnContextClassRef: 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
