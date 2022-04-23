@@ -81,7 +81,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
     }
   });
 
-  const assertion = idp.createAssertion({
+  const rawAssertion = {
     key: thisIdp.saml.privateKey,
     cert: thisIdp.saml.certificate,
     issuer: `https://idp.sso.tools/${thisIdp.code}`,
@@ -95,16 +95,27 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
     sessionIndex: ('sso_tools_session' + (Math.random() * 10000000)).replace('.', '_'),
     lifetimeInSeconds: 600,
     attributes: attributes
-  });
-  const response = idp.createResponse({
+  };
+  const rawResponse = {
     instant: new Date().toISOString().trim(),
     issuer: `https://idp.sso.tools/${thisIdp.code}`,
     inResponseTo: requestId,
     destination: thisSp.callbackUrl,
-    assertion: assertion,
+    assertion: rawAssertion,
     samlStatusCode: 'urn:oasis:names:tc:SAML:2.0:status:Success',
     samlStatusMessage: 'Login successful',
+  };
+  const Requests = await database.collection('requests');
+  await Requests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    type: 'loginResponse',
+    data: rawResponse,
   });
+
+  rawResponse.assertion = idp.createAssertion(rawAssertion);
+  const response = idp.createResponse(rawResponse);
   const encoded = Buffer.from(response).toString('base64');
 
   res.append('Set-Cookie', `sessionId=${sessionId}; Path=/`);
@@ -176,25 +187,31 @@ app.get('/:code/saml/login/request', async (req, res) => {
     }
 
     if (info.login) {
-      const fields = info.login;
-      const Requests = await database.collection('requests');
-      const result = await Requests.insertOne(info);
       const thisIdp = await getIdp(req.params.code);
       if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
-
       const IdpSps = await database.collection('idpSps');
-      const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: fields.issuer});
-      if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${fields.issuer}"`);
-      if (!fields.forceAuthn) {
+      const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: info.login.issuer});
+      if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${info.login.issuer}"`);
+
+      const Requests = await database.collection('requests');
+      await Requests.insertOne({
+        createdAt: new Date(),
+        idp: thisIdp._id,
+        sp: thisSp._id,
+        type: 'loginRequest',
+        data: info.login
+      });
+      
+      if (!info.login.forceAuthn) {
         const user = await getUser(req, thisIdp);
         if (user) {
           const sessionId = uuidv4();
           const IdpUsers = await database.collection('idpUsers');
           await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
-          return await sendAssertion(res, user, result.insertedId, thisIdp, thisSp, sessionId);
+          return await sendAssertion(res, user, info.login.id, thisIdp, thisSp, sessionId);
         }
       }
-      return loginForm(res, result.insertedId, thisIdp, thisSp);
+      return loginForm(res, info.login.id, thisIdp, thisSp);
     }
   }
   catch(err) {
@@ -218,10 +235,18 @@ app.get('/:code/saml/logout/request', async (req, res) => {
     if (info.logout) {
       const fields = info.logout;
       
-
       const IdpSps = await database.collection('idpSps');
       const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: fields.issuer});
       if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${fields.issuer}"`);
+
+      const Requests = await database.collection('requests');
+      await Requests.insertOne({
+        createdAt: new Date(),
+        idp: thisIdp._id,
+        sp: thisSp._id,
+        type: 'logoutRequest',
+        data: info.logout
+      });
 
       if (!fields.nameId) return errorPage(res, 'No NameID was included in the logout request.');
       const user = await getUser(req, thisIdp);
@@ -268,7 +293,7 @@ app.get('/:code/saml/login/initiate', async (req, res) => {
 //module.exports.spInitiatedLogin = async (event, context, callback) => {
 app.post('/:code/saml/login', async (req, res) => {
   const Requests = await database.collection('requests');
-  const request = await Requests.findOne({'_id': ObjectId(req.body.requestId)});
+  const request = await Requests.findOne({'login.id': ObjectId(req.body.requestId)});
   if (!request) return loginForm(res, req.body.requestId, null, null, 'This login request is not valid.');
   
   const thisIdp = await getIdp(req.params.code);
