@@ -81,7 +81,7 @@ def get_one(user, id):
 def update(user, id, data):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t edit this IdP')
 
@@ -101,7 +101,7 @@ def update(user, id, data):
 def delete(user, id):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t delete this IdP')
   db.idps.remove({'_id': id })
@@ -113,7 +113,7 @@ def delete(user, id):
 def create_sp(user, id, data):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t manage this IdP')
 
@@ -137,7 +137,7 @@ def update_sp(user, id, sp_id, data):
   db = database.get_db()
   existing = db.idpSps.find_one(sp_id)
   if not existing: return errors.NotFound('SP not found')
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -155,7 +155,7 @@ def update_sp(user, id, sp_id, data):
 def get_sps(user, id):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -170,10 +170,10 @@ def delete_sp(user, id, sp_id):
   existing = db.idpSps.find_one(sp_id)
   if not existing: return errors.NotFound('SP not found')
 
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
-  
+
   db.idpSps.remove({'_id': sp_id})
   return {'deletedIDPSP': sp_id}
 
@@ -183,7 +183,7 @@ def delete_sp(user, id, sp_id):
 def create_user(user, id, data):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -197,7 +197,7 @@ def create_user(user, id, data):
     'attributes': data.get('attributes', {}),
     'idp': id
   }
-  
+
   result = db.idpUsers.insert_one(new_user)
   new_user['_id'] = result.inserted_id
   del new_user['password']
@@ -209,7 +209,7 @@ def update_user(user, id, user_id, data):
   db = database.get_db()
   existing = db.idpUsers.find_one(user_id)
   if not existing: return errors.NotFound('User not found')
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -221,14 +221,14 @@ def update_user(user, id, user_id, data):
   }
   if data.get('password'):
     hashed_password = bcrypt.hashpw(data['password'].encode("utf-8"), bcrypt.gensalt())
-    update_data['password'] = hashed_password 
+    update_data['password'] = hashed_password
   db.idpUsers.update({'_id': user_id}, {'$set': update_data})
   return db.idpUsers.find_one({'_id': user_id}, {'firstName': 1, 'lastName': 1, 'email': 1, 'attributes': 1})
 
 def get_users(user, id):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t manage this IdP')
 
@@ -241,7 +241,7 @@ def delete_user(user, id, user_id):
   db = database.get_db()
   existing = db.idpUsers.find_one(user_id)
   if not existing: return errors.NotFound('User not found')
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -254,7 +254,7 @@ def delete_user(user, id, user_id):
 def create_attribute(user, id, data):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
   if not data or 'name' not in data: return errors.BadRequest('Attribute name is required')
@@ -265,7 +265,7 @@ def create_attribute(user, id, data):
     'samlMapping': data.get('samlMapping'),
     'idp': id
   }
-  
+
   result = db.idpAttributes.insert_one(new_attr)
   new_attr['_id'] = result.inserted_id
   return new_attr
@@ -276,7 +276,7 @@ def update_attribute(user, id, attr_id, data):
   db = database.get_db()
   existing = db.idpAttributes.find_one(attr_id)
   if not existing: return errors.NotFound('Attribute not found')
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -291,7 +291,7 @@ def update_attribute(user, id, attr_id, data):
 def get_attributes(user, id):
   id = ObjectId(id)
   db = database.get_db()
-  idp = db.idps.find_one(id)  
+  idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t manage this IdP')
 
@@ -304,7 +304,7 @@ def delete_attribute(user, id, attr_id):
   db = database.get_db()
   existing = db.idpAttributes.find_one(attr_id)
   if not existing: return errors.NotFound('Attribute not found')
-  idp = db.idps.find_one(existing['idp'])  
+  idp = db.idps.find_one(existing['idp'])
   if not idp: return errors.NotFound('IDP not found')
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
 
@@ -319,7 +319,6 @@ def get_logs(user, id):
   if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
   logs = list(db.requests.find({'idp': id}).sort('createdAt', pymongo.DESCENDING).limit(30))
   sps = list(db.idpSps.find({'idp': id}, {'name': 1}))
-  print(sps)
   for log in logs:
     if log.get('data', {}).get('assertion', {}).get('key'):
       log['data']['assertion']['key'] = 'REDACTED'
