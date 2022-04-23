@@ -28,7 +28,7 @@ function loginForm(res, requestId, currentIdp, currentSp, error) {
       `<h2>${currentSp ? `Login to access ${currentSp.name}`:'Login'}</h2><h5>You're authenticating with ${currentIdp ? currentIdp.name: ''}</h5> 
       ${currentSp ? '<p>After you\'ve logged-in, you\'ll be redirected back to '+currentSp.name+'.</p>' : ''}
       ${error ? `<p style="color:red;">${error}</p>` : ''}
-      <form method="post" action="/${currentIdp.code}/${currentSp ? `saml/login` : 'login'}">
+      <form method="post" action="/${currentIdp && currentIdp.code}/${currentSp ? `saml/login` : 'login'}">
       <input name="email" type="email" placeholder="Email address"/> <input name="password" type="password" placeholder="Password"/>
       <input name="requestId" type="hidden" value="${requestId}" />
       <button type="submit" value="Login" class="waves-effect waves-light btn">Login</button>
@@ -293,7 +293,7 @@ app.get('/:code/saml/login/initiate', async (req, res) => {
 //module.exports.spInitiatedLogin = async (event, context, callback) => {
 app.post('/:code/saml/login', async (req, res) => {
   const Requests = await database.collection('requests');
-  const request = await Requests.findOne({'login.id': ObjectId(req.body.requestId)});
+  const request = await Requests.findOne({'login.id': req.body.requestId});
   if (!request) return loginForm(res, req.body.requestId, null, null, 'This login request is not valid.');
   
   const thisIdp = await getIdp(req.params.code);
