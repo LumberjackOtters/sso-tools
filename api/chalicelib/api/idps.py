@@ -1,6 +1,6 @@
 import bcrypt, re
 from OpenSSL import crypto
-
+import pymongo
 from bson.objectid import ObjectId
 from chalicelib.util import database, errors
 errors = errors.errors
@@ -310,3 +310,21 @@ def delete_attribute(user, id, attr_id):
 
   db.idpAttributes.remove({'_id': attr_id})
   return {'deletedAttribute': attr_id}
+
+def get_logs(user, id):
+  id = ObjectId(id)
+  db = database.get_db()
+  idp = db.idps.find_one(id)
+  if not idp: return errors.NotFound('IDP not found')
+  if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
+  logs = list(db.requests.find({'idp': id}).sort('createdAt', pymongo.DESCENDING).limit(30))
+  sps = list(db.idpSps.find({'idp': id}, {'name': 1}))
+  print(sps)
+  for log in logs:
+    if log.get('data', {}).get('assertion', {}).get('key'):
+      log['data']['assertion']['key'] = 'REDACTED'
+    for sp in sps:
+      if log['sp'] == sp['_id']:
+        log['spName'] = sp['name']
+        break
+  return {'logs': logs}

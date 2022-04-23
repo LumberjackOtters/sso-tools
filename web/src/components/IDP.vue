@@ -51,7 +51,15 @@
                     <v-icon>compare_arrows</v-icon>
                   </v-list-tile-action>
                   <v-list-tile-content>
-                    <v-list-tile-title>SAML2 Configuration</v-list-tile-title>
+                    <v-list-tile-title>SAML2 configuration</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile :to="`/idps/${idp._id}/logs`">
+                  <v-list-tile-action>
+                    <v-icon>format_list_bulleted</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title>SAML2 logs</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>

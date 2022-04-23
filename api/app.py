@@ -136,3 +136,7 @@ def idp_attribute_route(id, attr_id):
     return util.jsonify(idps.delete_attribute(get_user(required=False), id, attr_id))
   if request.method == 'PUT':
     return util.jsonify(idps.update_attribute(get_user(required=False), id, attr_id, request.json))
+
+@app.route('/idps/<id>/logs', methods=['GET'])
+def idp_logs_route(id):
+  return util.jsonify(idps.get_logs(get_user(required=False), id))

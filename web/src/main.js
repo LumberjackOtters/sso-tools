@@ -17,6 +17,7 @@ import IDPUsers from './components/IdpUsers.vue';
 import IDPSettings from './components/IdpSettings.vue';
 import IDPSPs from './components/IdpSps.vue';
 import IDPSAML from './components/IdpSaml.vue';
+import IDPLogs from './components/IdpLogs.vue';
 
 import PrivacyPolicy from './components/legal/PrivacyPolicy.vue';
 import TermsOfUse from './components/legal/TermsOfUse.vue';
@@ -78,7 +79,8 @@ const router = new VueRouter({
       { path: 'users', component: IDPUsers }, 
       { path: 'settings', component: IDPSettings },
       { path: 'sps', component: IDPSPs },
-      { path: 'saml', component: IDPSAML }
+      { path: 'saml', component: IDPSAML },
+      { path: 'logs', component: IDPLogs }
     ] },
   ]
 })
