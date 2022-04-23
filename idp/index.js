@@ -130,7 +130,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
   );
 }
 
-//module.exports.root = async (event) => {
+// IdP dashboard
 app.get('/:code', async (req, res) => {
   const thisIdp = await getIdp(req.params.code);
   if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
@@ -174,7 +174,7 @@ app.get('/:code', async (req, res) => {
   </div>`));
 });
 
-//module.exports.handleLoginRequest = async (event, context, callback) => {
+// Received login request from SP
 app.get('/:code/saml/login/request', async (req, res) => {
   try{
     const request = req.query.SAMLRequest;
@@ -220,7 +220,7 @@ app.get('/:code/saml/login/request', async (req, res) => {
   }
 });
 
-//module.exports.handleLogoutRequest = async(event, context, callback) => {
+// Received logout request from SP
 app.get('/:code/saml/logout/request', async (req, res) => {
   try{
     const request = req.query.SAMLRequest;
@@ -230,7 +230,7 @@ app.get('/:code/saml/logout/request', async (req, res) => {
     const info = idp.parseRequest({ issuer: `https://idp.sso.tools/${thisIdp.code}` }, request);
 
     if (info.login) {
-      return errorPage(res, 'This endpoint cannot be used to handle login requests. Please use /logout/login instead.');
+      return errorPage(res, 'This endpoint cannot be used to handle login requests. Please use /login/request instead.');
     }
     if (info.logout) {
       const fields = info.logout;
@@ -272,7 +272,7 @@ app.get('/:code/saml/logout/request', async (req, res) => {
   }
 });
 
-//module.exports.idpInitiatedLogin = async (event, context, callback) => {
+// IdP-initiated login (i.e. clicked button on IdP dashboard)
 app.get('/:code/saml/login/initiate', async (req, res) => {
   if (!req.query.entityId) return errorPage(res, 'No entityId was provided');
   const thisIdp = await getIdp(req.params.code);
@@ -290,18 +290,18 @@ app.get('/:code/saml/login/initiate', async (req, res) => {
   return await sendAssertion(res, user, null, thisIdp, thisSp, sessionId);
 });
 
-//module.exports.spInitiatedLogin = async (event, context, callback) => {
+// SP-initiated login (i.e. if login to IdP required first)
 app.post('/:code/saml/login', async (req, res) => {
   const Requests = await database.collection('requests');
-  const request = await Requests.findOne({'login.id': req.body.requestId});
+  const request = await Requests.findOne({'data.id': req.body.requestId});
   if (!request) return loginForm(res, req.body.requestId, null, null, 'This login request is not valid.');
   
   const thisIdp = await getIdp(req.params.code);
   if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
 
   const IdpSps = await database.collection('idpSps');
-  const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: request.login.issuer});
-  if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${request.login.issuer}"`);
+  const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: request.data.issuer});
+  if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${request.data.issuer}"`);
 
   const IdpUsers = await database.collection('idpUsers');
   const user = await IdpUsers.findOne({email: req.body.email.toLowerCase(), idp: thisIdp._id });
@@ -312,10 +312,10 @@ app.post('/:code/saml/login', async (req, res) => {
   const sessionId = uuidv4();
   await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
 
-  return await sendAssertion(res, user, request._id, thisIdp, thisSp, sessionId);
+  return await sendAssertion(res, user, request.data.id, thisIdp, thisSp, sessionId);
 });
 
-//module.exports.login = async (event) => {
+// Login to IdP
 app.post('/:code/login', async (req, res) => {
   const thisIdp = await getIdp(req.params.code);
   if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
@@ -332,7 +332,7 @@ app.post('/:code/login', async (req, res) => {
   res.redirect(`/${thisIdp.code}`);
 });
 
-//module.exports.logout = async (event) => {
+// Logout of IdP
 app.get('/:code/logout', async (req, res) => {
   const thisIdp = await getIdp(req.params.code);
   const user = await getUser(req, thisIdp);
