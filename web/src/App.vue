@@ -12,7 +12,7 @@
 
           <v-menu offset-y transition="slide-y-transition" v-if="user">
 	    <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on"><v-icon>person</v-icon></v-btn>   
+              <v-btn icon v-on="on"><v-icon>person</v-icon></v-btn>
 	    </template>
             <v-card>
               <v-list>
@@ -37,7 +37,7 @@
                 </v-list-tile>
                 <v-list-tile @click="logout">
                   <v-list-tile-action>
-                    <v-icon>power_settings_new</v-icon> 
+                    <v-icon>power_settings_new</v-icon>
                   </v-list-tile-action>
                   <v-list-tile-title>Logout</v-list-tile-title>
                 </v-list-tile>
@@ -49,9 +49,9 @@
           <v-btn color="teal" dark v-on:click="openRegister" v-if="!loggedIn">Create a free account</v-btn>
         </v-toolbar-items>
       </v-toolbar>
-    
+
       <div style="min-height:100vh;">
-        <router-view></router-view> 
+        <router-view></router-view>
       </div>
 
       <v-footer dark height="auto">
@@ -97,7 +97,7 @@
                   <p>We collect this information from you for the sole purpose of creating and maintaining your account, and it will not be used for marketing purposes without your consent. Our Privacy Policy describes how we process your data in more detail.</p>
                   <v-btn to="/privacy" @click="closeRegister">Privacy Policy</v-btn>
                   <v-btn to="terms" @click="closeRegister">Terms of Use</v-btn>
-                 <v-checkbox v-model="newUser.termsAgreed" label="I have read and I agree to the SSO Tools Privacy Policy and Terms of Use" required></v-checkbox> 
+                 <v-checkbox v-model="newUser.termsAgreed" label="I have read and I agree to the SSO Tools Privacy Policy and Terms of Use" required></v-checkbox>
                 </v-card-text>
               </v-card>
 
@@ -170,7 +170,6 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 import logo from './assets/logo.png';
 import logoLight from './assets/logo_light.png';
 import api from './api';
@@ -247,6 +246,7 @@ export default {
         this.loggingIn = false;
         this.onLogin(token);
         localStorage.removeItem('idps');
+        this.loginData.password = '';
       }, err => {
         this.loggingIn = false;
         this.loginError = err.message;
@@ -267,6 +267,8 @@ export default {
         this.registering = false;
         this.onLogin(token);
         localStorage.removeItem('idps');
+        this.newUser.password = '';
+        this.newUser.termsAgreed = false;
       }, err => {
         this.registering = false;
         this.registerError = err.message;
@@ -287,7 +289,7 @@ export default {
     resetPassword() {
       this.resettingPassword = true;
       api.req('POST', '/accounts/password/reset', { email: this.loginData.email }, () => {
-        this.resettingPassword = false; 
+        this.resettingPassword = false;
         this.forgottenPasswordOpen = false;
       }, err => {
         this.resettingPassword = false;

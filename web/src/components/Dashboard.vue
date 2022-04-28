@@ -2,7 +2,7 @@
   <div>
     <v-container grid-list-xl :fluid="true">
       <h1>Welcome back<span v-if="user">, {{user.firstName}}</span></h1>
-      
+
       <v-layout style="margin-top:30px;">
         <v-flex xs12 sm6 md4>
           <v-alert :value="loggedIn" type="info">
@@ -68,7 +68,7 @@ import api from '../api';
 import emptyImage from '../assets/empty.jpg';
 
 export default {
-  name: 'HelloWorld',
+  name: 'Dashboard',
   data() {
     return {
       idps: [], emptyImage, loading: false
