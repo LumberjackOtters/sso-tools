@@ -2,9 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 import werkzeug
-from chalicelib.util import util, errors
+from chalicelib.util import util
 from chalicelib.api import accounts, users, idps
-errors = errors.errors
 
 app = Flask(__name__)
 CORS(app)

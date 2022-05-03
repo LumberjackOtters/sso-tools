@@ -14,10 +14,14 @@
               <v-text-field label="Last name" v-model="user.lastName" />
             </v-flex>
             <v-flex xs12 sm6>
-              <v-text-field label="Email address" v-model="user.email" readonly/>
+              <v-text-field label="Email address" v-model="user.email"/>
             </v-flex>
-            <p>Please note that changing your email address using this page is not possible at this time. For support with this, please just <a href='https://twitter.com/willwebberley' target='_blank' rel='noopener noreferrer'>get in touch</a>.</p>
+            <p>Please note that if you change your email address we will notify both your old and new addresses.</p>
           </v-layout>
+          <v-alert :value="error" type="error">
+            <h4>Unable to update your profile</h4>
+            <p>{{error}}</p>
+          </v-alert>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -86,12 +90,15 @@ export default {
   methods: {
     saveProfile() {
       this.savingProfile = true;
-      const { firstName, lastName } = this.user;
-      api.req('PUT', `/users/${this.$store.state.user._id}`, { firstName, lastName }, (user) => {
+      this.error = null;
+      const { firstName, lastName, email } = this.user;
+      api.req('PUT', `/users/${this.$store.state.user._id}`, { firstName, lastName, email }, (user) => {
         this.savingProfile = false;
         this.$store.commit('updateProfile', user);
       }, (err) => {
+        console.log(err);
         this.savingProfile= false;
+        this.error = err.message;
       });
     },
     savePassword() {

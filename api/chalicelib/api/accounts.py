@@ -1,7 +1,6 @@
 import datetime, jwt, bcrypt, os
 from bson.objectid import ObjectId
 from chalicelib.util import database, mail, errors
-errors = errors.errors
 
 jwt_secret = os.environ.get('JWT_SECRET')
 
@@ -94,7 +93,7 @@ def update_password(user, data):
   else:
     raise errors.BadRequest('Current password or reset token is required')
   if not user: raise errors.BadRequest('Unable to change your password')
-  
+
   hashed_password = bcrypt.hashpw(data['newPassword'].encode("utf-8"), bcrypt.gensalt())
   db.users.update({'_id': user['_id']}, {'$set': {'password': hashed_password}, '$unset': {'tokens.passwordReset': ''}})
   return {'passwordUpdated': True}

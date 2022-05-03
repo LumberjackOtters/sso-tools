@@ -3,7 +3,6 @@ from OpenSSL import crypto
 import pymongo
 from bson.objectid import ObjectId
 from chalicelib.util import database, errors
-errors = errors.errors
 
 forbidden_codes = ['', 'app', 'my', 'www', 'support', 'mail', 'email', 'dashboard', 'ssotools', 'myidp', 'seastorm']
 
