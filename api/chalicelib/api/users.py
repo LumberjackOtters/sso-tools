@@ -25,7 +25,7 @@ def update(user, id, data):
     email = data['email'].lower()
     existing_user = db.users.find_one({'_id': {'$ne': user['_id']}, 'email': email})
     if existing_user: raise errors.BadRequest('This new email address is already in use')
-    mail_content = 'Dear {0},\n\nThis email is to let you know that the email address for your SSOTools account has been changed to: {1}.\n\nIf this was not you, and/or you believe your account has been compromised, please login as soon as possible and change your account password.'.format(user['firstName'], email)
+    mail_content = 'Dear {0},\n\nThis email is to let you know that the email address for your SSO Tools account has been changed to: {1}.\n\nIf this was not you, and/or you believe your account has been compromised, please login as soon as possible and change your account password.'.format(user['firstName'], email)
     mail.send({
       'to_user': user,
       'subject': 'SSOTools Email Address Changed',

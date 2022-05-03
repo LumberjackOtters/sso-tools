@@ -30,7 +30,7 @@
       </v-card-actions>
     </v-card>
 
-    <v-card>
+    <v-card style="margin-bottom: 20px;">
       <v-card-title><span class="headline">Password</span></v-card-title>
       <v-card-text>
         <v-container grid-list-md>
@@ -59,6 +59,29 @@
       </v-card-actions>
     </v-card>
 
+    <v-card>
+      <v-card-title><span class="headline">Delete your account</span></v-card-title>
+      <v-card-text>
+        <v-container grid-list-md>
+          <p>If you delete your SSO Tools account, we'll also delete your account content. This includes Identity Providers, Service Providers, and any IdP users you have created.</p>
+          <p>To continue, please enter your account password.</p>
+          <v-layout wrap>
+            <v-flex xs12 sm6>
+              <v-text-field type="password" label="Current password" v-model="deletePassword" />
+            </v-flex>
+          </v-layout>
+          <v-alert :value="deleteError" type="error">
+            <h4>Unable to delete your account</h4>
+            <p>{{deleteError}}</p>
+          </v-alert>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn :loading="deleting" color="error" @click="deleteAccount">Delete account</v-btn>
+      </v-card-actions>
+    </v-card>
+
   </v-container>
 </template>
 
@@ -76,6 +99,9 @@ export default {
       savingPassword: false,
       passwordError: null,
       passwordSuccess: false,
+      deletePassword: '',
+      deleteError: null,
+      deleting: false,
       user: {},
     }
   },
@@ -116,6 +142,24 @@ export default {
         this.passwordError = err.message;
       });
     },
+    deleteAccount() {
+      if (!window.confirm('Really delete your account? This cannot be un-done.')) return;
+      this.deleting = true;
+      this.deleteError = null;
+      const { deletePassword } = this;
+      api.req('DELETE', `/accounts`, { password: deletePassword }, () => {
+        this.deleting = false;
+        this.deletePassword = '';
+        api.token = null;
+        localStorage.removeItem('apiToken');
+        this.$store.commit('setUser', null);
+        this.$store.commit('login', false);
+        this.$router.push('/');
+      }, (err) => {
+        this.deleting = false;
+        this.deleteError = err.message;
+      });
+    }
   }
 }
 </script>

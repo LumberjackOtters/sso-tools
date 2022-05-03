@@ -106,6 +106,7 @@ def delete(user, password):
     db.idpSps.remove({'idp': idp['_id']})
     db.idpUsers.remove({'idp': idp['_id']})
     db.idpAttributes.remove({'idp': idp['_id']})
+  db.idps.remove({'user': user['_id']})
   db.users.remove({'_id': user['_id']})
   return {'deletedUser': user['_id']}
 
