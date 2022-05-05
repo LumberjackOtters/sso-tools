@@ -104,7 +104,7 @@
           <p>SSO Tools is created and maintained by a solo developer. During my work as part of a growing startup selling enterprise SaaS, the need for providing larger organisations with federated authentication became hugely important.</p>
           <p>I spent a lot of my spare time reading-up and learning about the different approaches to SSO via SAML2, with a focus on security whilst also making set-up easy for our customers.</p>
           <p>In my spare time I began working on SSO Tools so that I could easily test sign-on and logout flows across different use-cases.</p>
-          <p>SSO Tools is free and open-source software, and you can <a href='https://git.wilw.dev/seastorm/sso-tools' target='_blank' rel='noopener noreferrer'>check out the source code</a> if you are interested. <strong>I hope you find it useful!</strong></p>
+          <p>SSO Tools is free and open-source software, and you can <a href='https://git.wilw.dev/wilw/sso-tools' target='_blank' rel='noopener noreferrer'>check out the source code</a> if you are interested. <strong>I hope you find it useful!</strong></p>
         </v-flex>
       </v-layout>
 
