@@ -4,7 +4,7 @@ import pymongo
 from bson.objectid import ObjectId
 from chalicelib.util import database, errors
 
-forbidden_codes = ['', 'app', 'my', 'www', 'support', 'mail', 'email', 'dashboard', 'ssotools', 'myidp', 'seastorm']
+forbidden_codes = ['', 'app', 'my', 'www', 'support', 'mail', 'email', 'dashboard', 'ssotools', 'myidp']
 
 def create_self_signed_cert(name):
   # create a key pair

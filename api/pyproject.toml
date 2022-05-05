@@ -2,7 +2,7 @@
 name = "ssotools-api"
 version = "0.1.0"
 description = ""
-authors = ["Will Webberley <will@seastorm.co>"]
+authors = ["Will Webberley <will@sso.tools>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

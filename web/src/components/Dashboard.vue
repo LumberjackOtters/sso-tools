@@ -83,12 +83,12 @@ export default {
   created (){
     let unsavedIdps = [];
     try { unsavedIdps = JSON.parse(localStorage.getItem('idps')); }
-    catch (err) {}
+    catch (err) { unsavedIdps = []; }
     this.loading = true;
     api.req('GET', `/idps${(unsavedIdps && unsavedIdps.length) ? `?include=${unsavedIdps.join(',')}` : ''}`, null, resp => {
       this.idps = resp.idps;
       this.loading = false;
-    }, err => console.log(err));
+    });
   },
   methods: {
     register() {

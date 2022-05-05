@@ -97,7 +97,7 @@
 
       <div style="margin: 50px 0px;"><v-divider /></div>
 
-      
+
       <v-layout :justify-center="true">
         <v-flex xs12 sm10 md8 lg6>
           <h1>👋 Hi there, thanks for visiting</h1>
@@ -141,7 +141,7 @@ export default {
   created (){
   },
   methods: {
-    
+
   },
 }
 </script>
@@ -158,7 +158,7 @@ export default {
     width:100%;
     height:100%;
     left:0;top:0;
-    
+
   }
   .banner-content{
     position:relative;

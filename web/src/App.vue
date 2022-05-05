@@ -62,9 +62,6 @@
             <v-btn flat dark to='/privacy'>Privacy Policy</v-btn>
             <v-btn flat dark to="terms">Terms of Use</v-btn>
           </v-card-title>
-          <v-card-actions class="grey darken-3">
-            <small>&copy; {{currentYear}} Seastorm Limited</small>
-          </v-card-actions>
         </v-card>
       </v-footer>
 

@@ -122,7 +122,6 @@ export default {
         this.savingProfile = false;
         this.$store.commit('updateProfile', user);
       }, (err) => {
-        console.log(err);
         this.savingProfile= false;
         this.error = err.message;
       });
