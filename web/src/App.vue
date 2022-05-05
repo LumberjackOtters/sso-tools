@@ -11,9 +11,9 @@
           <v-btn icon to="/dashboard"><v-icon>explore</v-icon></v-btn>
 
           <v-menu offset-y transition="slide-y-transition" v-if="user">
-	    <template v-slot:activator="{ on }">
+            <template v-slot:activator="{ on }">
               <v-btn icon v-on="on"><v-icon>person</v-icon></v-btn>
-	    </template>
+            </template>
             <v-card>
               <v-list>
                 <v-list-tile avatar>
@@ -153,7 +153,6 @@
           <v-card-text>
             <p>No problem. Enter the email address of your account below, and if it exists we'll send a password-reset link to you.</p>
             <v-text-field type="email" label="Email address" v-model="loginData.email" />
-            </v-container>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -237,7 +236,7 @@ export default {
       this.loginError = null;
       let idpsToClaim = [];
       try { idpsToClaim = JSON.parse(localStorage.getItem('idps')); }
-      catch (err) {}
+      catch (err) { idpsToClaim = []; }
 
       api.req('POST', '/accounts/sessions', { email, password, idpsToClaim }, ({ token }) => {
         this.loggingIn = false;
@@ -259,7 +258,7 @@ export default {
       this.registerError = null
       let idpsToClaim = [];
       try { idpsToClaim = JSON.parse(localStorage.getItem('idps')); }
-      catch (err) {}
+      catch (err) { idpsToClaim = []; }
       api.req('POST', '/accounts', { firstName, lastName, email, password, idpsToClaim }, ({ token }) => {
         this.registering = false;
         this.onLogin(token);
@@ -288,9 +287,8 @@ export default {
       api.req('POST', '/accounts/password/reset', { email: this.loginData.email }, () => {
         this.resettingPassword = false;
         this.forgottenPasswordOpen = false;
-      }, err => {
+      }, () => {
         this.resettingPassword = false;
-        console.log(err);
       });
     },
   }

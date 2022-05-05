@@ -113,7 +113,6 @@
 </template>
 
 <script>
-import api from '../api';
 import landing from '../assets/landing.png';
 import usersImage from '../assets/users.png';
 import secureImage from '../assets/secure.png';
