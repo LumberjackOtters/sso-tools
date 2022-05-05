@@ -63,7 +63,7 @@
       </v-layout>
 
       <h1 style="margin-top:50px;">Features &amp; roadmap</h1>
-      <p>SSO Tools is currently offered as a free service. It is maintained by a single developer for testing SAML2 SSO applications. It's not recommended for production use as there is no offer of guarantee for uptime! For any questions, or to get in touch, please do so via <a href="https://twitter.com/willwebberley" target="_blank" rel="noopener noreferrer">Twitter</a>.</p>
+      <p>SSO Tools is currently offered as a free service. It is maintained by a single developer for testing SAML2 SSO applications. It's not recommended for production use as there is no offer of guarantee for uptime! For any questions, or to get in touch, please do so via <a href="mailto:hello@sso.tools" target="_blank" rel="noopener noreferrer">email</a>.</p>
 
       <v-layout wrap>
         <v-flex sm6>
