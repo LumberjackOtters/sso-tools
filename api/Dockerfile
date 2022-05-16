@@ -13,6 +13,6 @@ RUN poetry export -f requirements.txt | pip install -r /dev/stdin
 
 # add app files
 COPY app.py .
-COPY chalicelib/ .
+COPY chalicelib ./chalicelib
 
 CMD ["gunicorn"  , "-b", "0.0.0.0:8000", "app:app"]
