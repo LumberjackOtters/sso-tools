@@ -1,8 +1,8 @@
 {
-  "name": "login",
+  "name": "ssotoolsidp",
   "version": "1.0.0",
   "scripts": {
-    
+
   },
   "dependencies": {
     "async": "^2.6.1",
