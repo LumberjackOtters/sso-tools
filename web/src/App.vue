@@ -2,53 +2,56 @@
   <div id="app">
     <v-app>
 
-      <v-toolbar >
-        <router-link :to="loggedIn ? '/dashboard' : '/'">
-          <img :src="logo" style="height:50px;"/>
-        </router-link>
-        <v-spacer></v-spacer>
-        <v-toolbar-items class="hidden-sm-and-down">
-          <v-btn icon to="/dashboard"><v-icon>explore</v-icon></v-btn>
+      <v-layout justify-content='space-between'>
+        <v-flex>
+          <router-link :to="loggedIn ? '/dashboard' : '/'">
+            <img :src="logo" style="height:50px;"/>
+          </router-link>
+        </v-flex>
+        <v-flex>
+          <div>
+            <v-btn icon to="/dashboard"><v-icon icon="explore"></v-icon></v-btn>
 
-          <v-menu offset-y transition="slide-y-transition" v-if="user">
-            <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on"><v-icon>person</v-icon></v-btn>
-            </template>
-            <v-card>
-              <v-list>
-                <v-list-tile avatar>
-                  <v-list-tile-avatar color="teal">
-                    <span class="white--text headline">{{user.firstName[0].toUpperCase()}}</span>
-                  </v-list-tile-avatar>
+            <v-menu offset-y transition="slide-y-transition" v-if="user">
+              <template v-slot:activator="{ on }">
+                <v-btn icon="mdi-explore" v-on="on"></v-btn>
+              </template>
+              <v-card>
+                <v-list>
+                  <v-list-tile avatar>
+                    <v-list-tile-avatar color="teal">
+                      <span class="white--text headline">{{user.firstName[0].toUpperCase()}}</span>
+                    </v-list-tile-avatar>
 
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{user.firstName}} {{user.lastName}}</v-list-tile-title>
-                    <v-list-tile-sub-title>{{user.email}}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+                    <v-list-tile-content>
+                      <v-list-tile-title>{{user.firstName}} {{user.lastName}}</v-list-tile-title>
+                      <v-list-tile-sub-title>{{user.email}}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
 
-              <v-divider></v-divider>
+                <v-divider></v-divider>
 
-              <v-list>
-                <v-list-tile to='/account'>
-                  <v-list-tile-action><v-icon>settings</v-icon></v-list-tile-action>
-                  <v-list-tile-title>Account</v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile @click="logout">
-                  <v-list-tile-action>
-                    <v-icon>power_settings_new</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-title>Logout</v-list-tile-title>
-                </v-list-tile>
-              </v-list>
-            </v-card>
-          </v-menu>
+                <v-list>
+                  <v-list-tile to='/account'>
+                    <v-list-tile-action><v-icon>settings</v-icon></v-list-tile-action>
+                    <v-list-tile-title>Account</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile @click="logout">
+                    <v-list-tile-action>
+                      <v-icon>power_settings_new</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title>Logout</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-card>
+            </v-menu>
 
-          <v-btn flat v-on:click="openLogin" v-if="!loggedIn">Login</v-btn>
-          <v-btn color="teal" dark v-on:click="openRegister" v-if="!loggedIn">Create a free account</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
+            <v-btn flat v-on:click="openLogin" v-if="!loggedIn">Login</v-btn>
+            <v-btn color="teal" dark v-on:click="openRegister" v-if="!loggedIn">Create a free account</v-btn>
+          </div>
+        </v-flex>
+      </v-layout>
 
       <div style="min-height:100vh;">
         <router-view></router-view>
@@ -106,7 +109,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" flat @click="closeRegister">Cancel</v-btn>
+            <v-btn color="secondary" @click="closeRegister">Cancel</v-btn>
             <v-btn color="primary" @click="register" :loading="registering">Register</v-btn>
           </v-card-actions>
         </v-card>

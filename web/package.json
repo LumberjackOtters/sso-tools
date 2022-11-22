@@ -3,47 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "predeploy": "yarn build",
-    "deploy": "aws s3 sync dist/ s3://sso.tools"
+    "start": "vite --port 3300",
+    "build": "vite build"
   },
   "dependencies": {
     "core-js": "^2.6.5",
     "moment": "^2.29.3",
-    "vue": "^2.6.10",
-    "vue-router": "^3.0.6",
-    "vuetify": "^1.5.13",
-    "vuex": "^3.1.0"
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.0.1",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.7.0",
-    "@vue/cli-plugin-eslint": "^3.7.0",
-    "@vue/cli-service": "^3.7.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
+    "@parcel/transformer-vue": "2.8.0",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "autoprefixer": "^10.4.13",
+    "vite": "^3.2.4",
+    "vue-template-compiler": "^2.7.14"
   },
   "browserslist": [
     "> 1%",

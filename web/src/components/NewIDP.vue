@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      
+
       <v-layout style="margin-top: 50px;" :justify-center="true">
         <v-flex xs12 md8>
 
@@ -71,7 +71,7 @@
 
             <v-layout wrap style="margin: 30px auto;">
               <v-flex xs12 sm6>
-                <v-text-field autofocus label="Friendly name" required autofocus v-model="newSP.name" hint="To help you identify this SP." placeholder="My Service"/>
+                <v-text-field label="Friendly name" required autofocus v-model="newSP.name" hint="To help you identify this SP." placeholder="My Service"/>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-text-field label="Service URL" v-model="newSP.serviceUrl" hint="The URL used to access your service. For example, for a webapp, you can just use your website URL." placeholder="https://sp.example.com"/>
@@ -109,7 +109,7 @@
         </v-flex>
       </v-layout>
     </v-container>
-      
+
   </div>
 </template>
 
@@ -169,7 +169,7 @@ export default {
           this.creating = false;
           this.page = this.page + 1;
         }, err => {
-          this.creating = false; 
+          this.creating = false;
         });
       }
     },
@@ -181,7 +181,7 @@ export default {
         this.creating = false;
         this.page = this.page + 1;
       }, err => {
-        this.creating = false; 
+        this.creating = false;
       });
     },
   },

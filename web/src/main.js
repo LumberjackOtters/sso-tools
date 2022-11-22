@@ -1,7 +1,10 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify'
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import { createStore } from 'vuex'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 import App from './App.vue'
 import 'vuetify/dist/vuetify.min.css'
@@ -22,11 +25,7 @@ import IDPLogs from './components/IdpLogs.vue';
 import PrivacyPolicy from './components/legal/PrivacyPolicy.vue';
 import TermsOfUse from './components/legal/TermsOfUse.vue';
 
-Vue.use(Vuetify);
-Vue.use(VueRouter);
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const store = createStore({
   state: {
     loggedIn: false,
     user: null,
@@ -59,13 +58,13 @@ const store = new Vuex.Store({
       state.loginOpen = open;
     },
   }
-});
+})
 
-const router = new VueRouter({
+const router = createRouter({
   scrollBehavior() {
-    return { x: 0, y: 0 };
+    return { left: 0, top: 0 };
   },
-  mode: 'history',
+  history: createWebHistory(),
   routes: [
     { path: '/', component: Home },
     { path: '/privacy', component: PrivacyPolicy },
@@ -85,4 +84,13 @@ const router = new VueRouter({
   ]
 })
 
-new Vue({ store, router, render: h => h(App) }).$mount('#app')
+const vuetify = createVuetify({
+  components,
+  directives,
+})
+
+const app = createApp(App)
+app.use(store)
+app.use(vuetify)
+app.use(router)
+app.mount('#app')
