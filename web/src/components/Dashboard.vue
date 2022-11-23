@@ -22,39 +22,35 @@
         </v-col>
 
         <v-col xs="12" sm="8">
-          <div class="d-flex justify-space-between">
-            <h2>Your IDPs</h2>
-            <v-btn to='/idps/new' color="primary" v-if="idps.length">Create a new IDP</v-btn>
-          </div>
-
           <div style="text-align:center;margin-top:50px;" v-if="loading">
             <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
           </div>
 
-          <div v-if="!idps.length && !loading" class="mt-15">
-            <v-sheet elevation="6">
-              <div style="padding: 20px">
-                <h4>There's nothing out there yet</h4>
-                <v-btn to='/idps/new' color="primary">Get started!</v-btn>
-
-                <img :src="emptyImage" style="width:100%;max-width:400px;display:block;margin:20px auto;" />
-              </div>
-            </v-sheet>
+          <div v-if="!idps.length && !loading" class="text-center">
+            <h3 class="mb-5">You don't yet have any IdPs</h3>
+            <v-btn to='/idps/new' color="primary">Create your first IdP</v-btn>
+            <img :src="emptyImage" style="width:100%;max-width:400px;display:block;margin:20px auto;" />
           </div>
 
-          <v-layout row wrap class="mt-10">
-            <v-flex xs12 sm12 md6 v-for="idp in idps" :key="idp._id" style="padding: 8px;">
-            <v-card :to="`/idps/${idp._id}`">
-              <v-card-title primary-title>
-                <h3 class="headline mb-0">{{idp.name}}</h3>
-              </v-card-title>
-              <v-card-text>https://idp.sso.tools/{{idp.code}}</v-card-text>
-              <v-card-actions>
-                <v-btn to="{ path: `/idps/${idp._id}`}" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
-              </v-card-actions>
-            </v-card>
-            </v-flex>
-          </v-layout>
+          <div v-if="idps.length">
+            <div class="d-flex justify-space-between">
+              <h2>Your IDPs</h2>
+              <v-btn to='/idps/new' color="primary" v-if="idps.length">Create a new IDP</v-btn>
+            </div>
+            <div class="mt-10 d-flex flex-wrap">
+              <div class="w-50 pa-2" v-for="idp in idps" :key="idp._id">
+                <v-card :to="`/idps/${idp._id}`">
+                  <v-card-title primary-title>
+                    <h3 class="headline mb-0">{{idp.name}}</h3>
+                  </v-card-title>
+                  <v-card-text>https://idp.sso.tools/{{idp.code}}</v-card-text>
+                  <v-card-actions>
+                    <v-btn to="{ path: `/idps/${idp._id}`}" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </div>
+            </div>
+          </div>
         </v-col>
       </v-row>
 
@@ -64,7 +60,7 @@
 
 <script>
 import api from '../api';
-import emptyImage from '../assets/empty.jpg';
+import emptyImage from '../assets/empty.png';
 
 export default {
   name: 'Dashboard',
