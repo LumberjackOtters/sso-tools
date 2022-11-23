@@ -2,15 +2,15 @@
   <div id="app">
     <v-app class="d-flex flex-row">
 
-      <div class="d-flex justify-space-between align-center pl-4 pr-4">
+      <div class="d-flex justify-space-between align-center pl-4 pr-4 bg-indigo-lighten-5">
         <div>
           <router-link :to="loggedIn ? '/dashboard' : '/'">
             <img :src="logo" style="height:50px;"/>
           </router-link>
         </div>
-        <div class="d-none d-sm-block">
+        <div class="d-none d-sm-flex align-center">
           <div>
-            <v-btn flat to="/dashboard" class="mr-2"
+            <v-btn flat to="/dashboard" class="mr-2" color="white"
               icon="mdi-compass"
             ></v-btn>
             <v-btn color='teal-lighten-3' flat icon v-if="loggedIn">

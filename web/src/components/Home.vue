@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="d-block d-sm-flex align-center bg-indigo-lighten-5">
+    <div class="bg-indigo-lighten-5">
+      <v-container class="d-block d-sm-flex align-center">
       <div class="w-auto pa-5">
         <h1 class="mb-5">Set-up and test single sign-on in your web, mobile, and desktop apps</h1>
         <p>With SSO Tools it is easy to spin-up your own custom identity providers, allowing you to start testing your <span class="bg-yellow-lighten-3 rounded-md pa-1">SAML2</span> applications in minutes.</p>
@@ -17,8 +18,10 @@
       <div class="w-auto">
         <img v-bind:src="landingImage" class="w-100"/>
       </div>
+      </v-container>
     </div>
 
+    <v-container>
     <div class="text-center mt-10 ml-5 mr-5">
       <h2>Get confident with your SSO apps</h2>
       <p>Develop and fully test out your applications with single sign-on to radically improve your offering for <strong>enterprise customers</strong>.</p>
@@ -60,7 +63,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column align-center bg-indigo-lighten-5 mt-16 pa-10">
+    <div class="d-flex flex-column align-center bg-indigo-lighten-5 mt-16 pa-10 rounded-lg elevation-5">
       <div class="w-50">
         <h1>Features &amp; roadmap</h1>
         <p>SSO Tools is offered as a free service. For any questions, or to get in touch, please do so via <a href="mailto:hello@sso.tools" target="_blank" rel="noopener noreferrer">email</a>.</p>
@@ -103,6 +106,7 @@
       </div>
     </div>
 
+    </v-container>
   </div>
 </template>
 

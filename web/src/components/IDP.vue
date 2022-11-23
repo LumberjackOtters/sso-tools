@@ -4,76 +4,47 @@
       <h3>Manage Identity Provider</h3>
       <h1 style="margin-bottom:30px">{{idp && idp.name}}</h1>
 
-      <v-layout wrap>
-        <v-flex md4 xs12>
-          <v-card>
-              <v-list>
-                <v-list-tile exact :to="`/idps/${idp._id}`">
-                  <v-list-tile-action>
-                    <v-icon>home</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Overview</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+      <div class="d-block d-sm-flex">
+        <div>
+          <v-card v-if="idp">
+            <v-list>
+              <v-list-item exact :to="`/idps/${idp._id}`" prepend-icon="mdi-home">
+                <v-list-item-content>Overview</v-list-item-content>
+              </v-list-item>
 
-                <v-list-tile :to="`/idps/${idp._id}/settings`">
-                  <v-list-tile-action>
-                    <v-icon>settings</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Settings</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+              <v-list-item :to="`/idps/${idp._id}/settings`" prepend-icon="mdi-cogs">
+                <v-list-item-content>Settings</v-list-item-content>
+              </v-list-item>
 
-                <v-list-tile :to="`/idps/${idp._id}/users`">
-                  <v-list-tile-action>
-                    <v-icon>people</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Users</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+              <v-list-item :to="`/idps/${idp._id}/users`" prepend-icon="mdi-account-group">
+                <v-list-item-content>Users</v-list-item-content>
+              </v-list-item>
 
-                <v-list-tile :to="`/idps/${idp._id}/sps`">
-                  <v-list-tile-action>
-                    <v-icon>extension</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Connected apps</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+              <v-list-item :to="`/idps/${idp._id}/sps`" prepend-icon="mdi-power-plug">
+                <v-list-item-content>Connected apps</v-list-item-content>
+              </v-list-item>
 
-                <v-divider></v-divider>
+              <v-divider></v-divider>
 
-                <v-list-tile :to="`/idps/${idp._id}/saml`">
-                  <v-list-tile-action>
-                    <v-icon>compare_arrows</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>SAML2 configuration</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile :to="`/idps/${idp._id}/logs`">
-                  <v-list-tile-action>
-                    <v-icon>format_list_bulleted</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>SAML2 logs</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+              <v-list-item :to="`/idps/${idp._id}/saml`" prepend-icon="mdi-swap-horizontal">
+                <v-list-item-content>SAML2 configuration</v-list-item-content>
+              </v-list-item>
+
+              <v-list-item :to="`/idps/${idp._id}/logs`" prepend-icon="mdi-format-list-bulleted">
+                <v-list-item-content>SAML2 logs</v-list-item-content>
+              </v-list-item>
               </v-list>
           </v-card>
 
-          <v-btn block color='secondary' style="margin-top: 15px;" :href="`https://idp.sso.tools/${idp.code}`" target="_blank"><v-icon>open_in_new</v-icon> Open IdP dashboard</v-btn>
-        </v-flex>
+          <v-btn block class="mt-5" :href="`https://idp.sso.tools/${idp?.code}`" target="_blank" prepend-icon="mdi-open-in-new">Open IdP dashboard</v-btn>
+        </div>
 
-        <v-flex md8>
+        <div class="ml-5" style="flex: 1">
           <div v-if="idp">
-            <router-view :idp="idp"/>
+            <router-view :idp="idp" @onUpdateIdp="updateIdp"/>
           </div>
-        </v-flex>
-      </v-layout>
+        </div>
+      </div>
 
     </v-container>
   </div>
@@ -96,7 +67,9 @@ export default {
     });
   },
   methods: {
-    
+    updateIdp(upd) {
+      this.idp = upd;
+    },
   },
 }
 </script>

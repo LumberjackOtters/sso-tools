@@ -6,7 +6,7 @@
       <v-card-text>
         <h5>IDP host</h5>
         <p>The URL of your IDP on the Internet. This forms the basis of your <router-link :to="`/idps/${idp._id}/saml`">SSO configuration</router-link>.</p>
-        <v-text-field :value="`https://idp.sso.tools/${idp.code}`" label="IDP host" readonly/>
+        <v-text-field :model-value="`https://idp.sso.tools/${idp.code}`" label="IDP host" variant="solo" readonly/>
 
         <h5>SAML2 configuration</h5>
         <v-btn :to='`/idps/${idp._id}/saml`'>See SAML2 configuration</v-btn>
@@ -18,7 +18,7 @@
       <v-card-title primary-title><h3>Delete IDP</h3></v-card-title>
       <v-card-text>Deleting this IDP will immediately and irreversibly remove the Identity Provider, its registered Service Providers, and any users associated with the IDP.</v-card-text>
       <v-card-actions>
-        <v-btn v-on:click="deleteIDP" color='warning'>Delete</v-btn>
+        <v-btn v-on:click="deleteIDP" color='red'>Delete</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -56,7 +56,7 @@ export default {
     deleteConfirm (event) {
       this.deletingProgress = true;
       api.req('DELETE', `/idps/${this.$route.params.id}`, null, resp => {
-        this.deletingProgress = false; 
+        this.deletingProgress = false;
         this.deleting = false;
         this.$router.push('/dashboard');
       }, err => {

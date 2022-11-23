@@ -45,7 +45,7 @@
                   </v-card-title>
                   <v-card-text>https://idp.sso.tools/{{idp.code}}</v-card-text>
                   <v-card-actions>
-                    <v-btn to="{ path: `/idps/${idp._id}`}" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
+                    <v-btn :to="`/idps/${idp._id}`" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
                   </v-card-actions>
                 </v-card>
               </div>

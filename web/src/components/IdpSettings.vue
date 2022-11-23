@@ -1,8 +1,5 @@
 <template>
   <div>
-    <p>Configure your identity provider.</p>
-    <div style="clear:both;margin-bottom: 20px;" />
-
     <h5>Friendly name</h5>
     <p>This is the name given to your IDP so that you can recognise it. It's also the name shown to <router-link :to="`/idps/${idp._id}/users`">users who authenticate against this IDP</router-link>.</p>
     <v-text-field v-model="idp.name" label="Friendly name"/>
@@ -35,7 +32,7 @@ export default {
       const data = { name, code };
       this.saving = true;
       api.req('PUT', `/idps/${this.idp._id}`, { name, code }, resp => {
-        this.idp = resp;
+        this.$emit('onUpdateIdp', resp);
         this.snackbar = true;
         this.saving = false;
       }, err => {

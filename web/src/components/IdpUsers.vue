@@ -1,76 +1,80 @@
 <template>
   <div>
-    <h2>User accounts</h2>
-    <p>Manage the user accounts in this IdP. These users can authenticate against this IdP as part of a single sign-on flow.</p>
-    <p>Note that you will not be able to authenticate against this IdP using your SSO Tools account. You can safely use dummy names/emails here (e.g. "name@example.com"). Auto-generated users are given the default password <code>password</code>.</p>
+    <v-card>
+      <v-card-title primary-title><h3>User accounts</h3></v-card-title>
+      <v-card-text>
+        <p class="mb-2">Manage the user accounts in this IdP. These users can authenticate against this IdP as part of a single sign-on flow.</p>
+        <p><small>Note that you will not be able to authenticate against this IdP using your SSO Tools account. You can safely use dummy names/emails here (e.g. "name@example.com"). Auto-generated users are given the default password <code>password</code>.</small></p>
 
-    <v-btn color='primary' style="float:right;" v-on:click="openDialog"><v-icon>add</v-icon> Register a new user</v-btn>
-    <div style="clear:both;margin-bottom: 20px;" />
+        <v-btn color='primary' style="float:right;" v-on:click="openDialog"><v-icon>add</v-icon> Register a new user</v-btn>
+        <div style="clear:both;margin-bottom: 20px;" />
 
-    <v-data-table :loading="loadingUsers" hide-actions class="elevation-1" :headers="tableHeaders" :items="users">
-      <template v-slot:items="props">
-        <td>{{props.item.firstName}}</td>
-        <td>{{props.item.lastName}}</td>
-        <td>{{props.item.email}}</td>
-        <td>
-          <v-menu offset-y transition="slide-y-transition">
-	    <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on">settings</v-icon>
-	    </template>
-	    <v-list>
-	      <v-list-tile v-on:click="e => editUser(props.item)">
-		<v-list-tile-title><v-icon>edit</v-icon> Update</v-list-tile-title>
-	      </v-list-tile>
-              <v-list-tile v-on:click="e => deleteUser(props.item._id)">
-		<v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
-	      </v-list-tile>
-	    </v-list>
-	  </v-menu>  
-        </td>
-      </template>
-    </v-data-table>
+        <v-data-table :loading="loadingUsers" hide-actions class="elevation-1" :headers="tableHeaders" :items="users">
+          <template v-slot:items="props">
+            <td>{{props.item.firstName}}</td>
+            <td>{{props.item.lastName}}</td>
+            <td>{{props.item.email}}</td>
+            <td>
+              <v-menu offset-y transition="slide-y-transition">
+	        <template v-slot:activator="{ on }">
+                  <v-icon small class="mr-2" v-on="on">settings</v-icon>
+	        </template>
+	        <v-list>
+	          <v-list-tile v-on:click="e => editUser(props.item)">
+		    <v-list-tile-title><v-icon>edit</v-icon> Update</v-list-tile-title>
+	          </v-list-tile>
+                  <v-list-tile v-on:click="e => deleteUser(props.item._id)">
+		    <v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
+	          </v-list-tile>
+	        </v-list>
+	      </v-menu>
+            </td>
+          </template>
+        </v-data-table>
 
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{editing ? 'Edit user' : 'Create a new user'}}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12 sm6>
-                <v-text-field label="First name" required autofocus v-model="newUser.firstName"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Last name" v-model="newUser.lastName" />
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field type="email" label="Email address" v-model="newUser.email" />
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field type="password" label="Password" hint="This can be changed later." v-model="newUser.password" />
-              </v-flex>
-            </v-layout>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{editing ? 'Edit user' : 'Create a new user'}}</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12 sm6>
+                    <v-text-field label="First name" required autofocus v-model="newUser.firstName"/>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field label="Last name" v-model="newUser.lastName" />
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field type="email" label="Email address" v-model="newUser.email" />
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field type="password" label="Password" hint="This can be changed later." v-model="newUser.password" />
+                  </v-flex>
+                </v-layout>
 
-            <div v-if="attributes.length">
-              <h3>Extra attributes</h3>
-              <p>Specifying a value for an attribute below will include that value in assertions made during the SSO process, overriding the attribute's default value. Leave values here blank to send the default attribute value instead.</p>
+                <div v-if="attributes.length">
+                  <h3>Extra attributes</h3>
+                  <p>Specifying a value for an attribute below will include that value in assertions made during the SSO process, overriding the attribute's default value. Leave values here blank to send the default attribute value instead.</p>
 
-              <v-layout>
-                <v-flex xs12 sm6 v-for="attribute in attributes">
-                  <v-text-field :label="attribute.name" :hint="`Default value: ${attribute.defaultValue ? `'${attribute.defaultValue}'` : 'none'}`" v-model="newUser.attributes[attribute._id]" /> 
-                </v-flex>
-              </v-layout>
-            </div>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" dark @click="create">{{editing ? 'Save' : 'Create'}}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+                  <v-layout>
+                    <v-flex xs12 sm6 v-for="attribute in attributes">
+                      <v-text-field :label="attribute.name" :hint="`Default value: ${attribute.defaultValue ? `'${attribute.defaultValue}'` : 'none'}`" v-model="newUser.attributes[attribute._id]" />
+                    </v-flex>
+                  </v-layout>
+                </div>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" flat @click="dialog = false">Cancel</v-btn>
+              <v-btn color="blue darken-1" dark @click="create">{{editing ? 'Save' : 'Create'}}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-card-text>
+    </v-card>
 
     <h2 style="margin-top:30px;">Extra attributes</h2>
     <p>Manage custom attributes that can be passed to the Service Provider during sign-on.</p>
@@ -95,7 +99,7 @@
 		<v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
 	      </v-list-tile>
 	    </v-list>
-	  </v-menu>  
+	  </v-menu>
         </td>
       </template>
     </v-data-table>
@@ -127,8 +131,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
-    
+
+
   </div>
 </template>
 

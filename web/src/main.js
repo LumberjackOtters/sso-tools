@@ -75,7 +75,7 @@ const router = createRouter({
     { path: '/dashboard', component: Dashboard },
     { path: '/idps/new', component: NewIDP },
     { path: '/idps/:id', component: IDP, children: [
-      { path: '/', component: IDPHome },
+      { path: '', component: IDPHome },
       { path: 'users', component: IDPUsers },
       { path: 'settings', component: IDPSettings },
       { path: 'sps', component: IDPSPs },
