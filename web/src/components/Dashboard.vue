@@ -1,35 +1,37 @@
 <template>
   <div>
-    <v-container grid-list-xl :fluid="true">
+    <v-container fluid="true">
       <h1>Welcome back<span v-if="user">, {{user.firstName}}</span></h1>
 
-      <v-layout style="margin-top:30px;">
-        <v-flex xs12 sm6 md4>
-          <v-alert :value="loggedIn" type="info">
-            <h4>Thanks for being a member!</h4>
-            <p>If you need any support with SSO Tools or with connecting applications using SAML2, please get in touch with us.</p>
+      <v-row class="mt-10">
+        <v-col xs="12" sm="4">
+          <v-alert v-if="loggedIn" color="blue-darken-1" icon="mdi-flash">
+            <h3>Thanks for being a member!</h3>
+            <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
           </v-alert>
 
-          <v-alert :value="!loggedIn" type="warning" >
-            <h4>Hey! Listen!</h4>
-            <p>You're currently using SSO Tools in sandbox mode as a non-member.</p>
+          <v-alert v-if="!loggedIn" type="warning" >
+            <h3>Hey! Listen!</h3>
+            <p class="mb-4">You're currently using SSO Tools in sandbox mode as a non-member.</p>
             <p>This is totally fine, but it means that you'll lose access to any IDPs, SPs, and other settings you create if and when your session ends. Login or create a new account to save your progress.</p>
-            <v-btn color="teal" dark v-on:click="register">Create your free account</v-btn>
-            <v-btn v-on:click="login">Login</v-btn>
+            <div class="mt-5">
+              <v-btn class="mr-2" color="teal" dark v-on:click="register">Register</v-btn>
+              <v-btn v-on:click="login">Login</v-btn>
+            </div>
           </v-alert>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12 sm6 md12>
-
-          <v-btn style="float:right;" to='/idps/new' color="primary" v-if="idps.length">Create a new IDP</v-btn>
-          <h2>Your IDPs</h2>
-          <div style="clear:both;" />
+        <v-col xs="12" sm="8">
+          <div class="d-flex justify-space-between">
+            <h2>Your IDPs</h2>
+            <v-btn to='/idps/new' color="primary" v-if="idps.length">Create a new IDP</v-btn>
+          </div>
 
           <div style="text-align:center;margin-top:50px;" v-if="loading">
             <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
           </div>
 
-          <div v-if="!idps.length && !loading" style="text-align:center;margin-top:50px;">
+          <div v-if="!idps.length && !loading" class="mt-15">
             <v-sheet elevation="6">
               <div style="padding: 20px">
                 <h4>There's nothing out there yet</h4>
@@ -40,24 +42,21 @@
             </v-sheet>
           </div>
 
-          <v-layout row wrap>
+          <v-layout row wrap class="mt-10">
             <v-flex xs12 sm12 md6 v-for="idp in idps" :key="idp._id" style="padding: 8px;">
             <v-card :to="`/idps/${idp._id}`">
               <v-card-title primary-title>
-                <div>
-                  <h3 class="headline mb-0">{{idp.name}}</h3>
-                  <div>https://idp.sso.tools/{{idp.code}}</div>
-                </div>
+                <h3 class="headline mb-0">{{idp.name}}</h3>
               </v-card-title>
-
+              <v-card-text>https://idp.sso.tools/{{idp.code}}</v-card-text>
               <v-card-actions>
-                <v-btn :to="{ path: `/idps/${idp._id}`}" flat color="orange"><v-icon>settings</v-icon> Manage</v-btn>
+                <v-btn to="{ path: `/idps/${idp._id}`}" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
               </v-card-actions>
             </v-card>
             </v-flex>
           </v-layout>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
 
     </v-container>
   </div>

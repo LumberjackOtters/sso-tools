@@ -13,42 +13,34 @@
             <v-btn flat to="/dashboard" class="mr-2"
               icon="mdi-compass"
             ></v-btn>
-            <v-menu offset-y transition="slide-y-transition" v-if="user" class="mr-2">
-              <template v-slot:activator="{ on }">
-                <v-btn icon="mdi-explore" v-on="on"></v-btn>
-              </template>
-              <v-card>
+            <v-btn color='teal-lighten-3' flat icon v-if="loggedIn">
+              <v-icon icon="mdi-account" />
+              <v-menu activator="parent">
                 <v-list>
-                  <v-list-tile avatar>
-                    <v-list-tile-avatar color="teal">
-                      <span class="white--text headline">{{user.firstName[0].toUpperCase()}}</span>
-                    </v-list-tile-avatar>
+                  <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>{{user.firstName}} {{user.lastName}}</v-list-item-title>
+                        <v-list-item-sub-title class="text-grey">{{user.email}}</v-list-item-sub-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
 
-                    <v-list-tile-content>
-                      <v-list-tile-title>{{user.firstName}} {{user.lastName}}</v-list-tile-title>
-                      <v-list-tile-sub-title>{{user.email}}</v-list-tile-sub-title>
-                    </v-list-tile-content>
-                  </v-list-tile>
+                  <v-divider></v-divider>
+
+                  <v-list>
+                    <v-list-item to='/account'>
+                      <v-list-item-icon><v-icon icon="mdi-cogs" class="mr-2"/></v-list-item-icon>
+                      <v-list-item-content>Account</v-list-item-content>
+                    </v-list-item>
+                    <v-list-item @click="logout">
+                      <v-list-item-icon><v-icon icon="mdi-power" class="mr-2"/></v-list-item-icon>
+                      <v-list-item-content>Logout</v-list-item-content>
+                    </v-list-item>
                 </v-list>
+              </v-menu>
+            </v-btn>
 
-                <v-divider></v-divider>
-
-                <v-list>
-                  <v-list-tile to='/account'>
-                    <v-list-tile-action><v-icon>settings</v-icon></v-list-tile-action>
-                    <v-list-tile-title>Account</v-list-tile-title>
-                  </v-list-tile>
-                  <v-list-tile @click="logout">
-                    <v-list-tile-action>
-                      <v-icon>power_settings_new</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title>Logout</v-list-tile-title>
-                  </v-list-tile>
-                </v-list>
-              </v-card>
-            </v-menu>
-
-            <v-btn flat v-on:click="openLogin" v-if="!loggedIn">Login</v-btn>
+            <v-btn class="mr-2" flat v-on:click="openLogin" v-if="!loggedIn">Login</v-btn>
             <v-btn color="teal" dark v-on:click="openRegister" v-if="!loggedIn">Create a free account</v-btn>
           </div>
         </div>
@@ -103,7 +95,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" @click="closeRegister">Cancel</v-btn>
+            <v-btn @click="closeRegister">Cancel</v-btn>
             <v-btn color="primary" @click="register" :loading="registering">Register</v-btn>
           </v-card-actions>
         </v-card>
@@ -132,7 +124,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" @click="closeLogin">Cancel</v-btn>
+            <v-btn @click="closeLogin">Cancel</v-btn>
             <v-btn color="primary" @click="login" :loading="loggingIn">Login</v-btn>
           </v-card-actions>
         </v-card>
@@ -149,7 +141,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" flat @click="forgottenPasswordOpen = false">Cancel</v-btn>
+            <v-btn @click="forgottenPasswordOpen = false">Cancel</v-btn>
             <v-btn color="primary" @click="resetPassword" :loading="resettingPassword">Send me a reset link</v-btn>
           </v-card-actions>
         </v-card>
