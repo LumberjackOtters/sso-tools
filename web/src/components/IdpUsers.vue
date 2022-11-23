@@ -3,34 +3,45 @@
     <v-card>
       <v-card-title primary-title><h3>User accounts</h3></v-card-title>
       <v-card-text>
-        <p class="mb-2">Manage the user accounts in this IdP. These users can authenticate against this IdP as part of a single sign-on flow.</p>
-        <p><small>Note that you will not be able to authenticate against this IdP using your SSO Tools account. You can safely use dummy names/emails here (e.g. "name@example.com"). Auto-generated users are given the default password <code>password</code>.</small></p>
+        <p class="mb-2">These users can authenticate against this IdP as part of a single sign-on flow.</p>
+        <v-alert icon='mdi-information'>
+          <p><small>Note that you will not be able to authenticate against this IdP using your own SSO Tools account. You can safely use dummy names/emails here (e.g. "name@example.com"). Auto-generated users are given the default password <code>password</code>.</small></p>
+        </v-alert>
 
-        <v-btn color='primary' style="float:right;" v-on:click="openDialog"><v-icon>add</v-icon> Register a new user</v-btn>
-        <div style="clear:both;margin-bottom: 20px;" />
+        <div class="d-flex justify-end mt-5 mb-b">
+          <v-btn color='primary' v-on:click="openDialog" prepend-icon="mdi-plus">New user</v-btn>
+        </div>
 
-        <v-data-table :loading="loadingUsers" hide-actions class="elevation-1" :headers="tableHeaders" :items="users">
-          <template v-slot:items="props">
-            <td>{{props.item.firstName}}</td>
-            <td>{{props.item.lastName}}</td>
-            <td>{{props.item.email}}</td>
-            <td>
-              <v-menu offset-y transition="slide-y-transition">
-	        <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-2" v-on="on">settings</v-icon>
-	        </template>
-	        <v-list>
-	          <v-list-tile v-on:click="e => editUser(props.item)">
-		    <v-list-tile-title><v-icon>edit</v-icon> Update</v-list-tile-title>
-	          </v-list-tile>
-                  <v-list-tile v-on:click="e => deleteUser(props.item._id)">
-		    <v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
-	          </v-list-tile>
-	        </v-list>
-	      </v-menu>
-            </td>
-          </template>
-        </v-data-table>
+        <v-table :loading="loadingUsers" v-if="users.length">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th class="text-right"/>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" key="user._id">
+              <td>{{user.firstName}} {{user.lastName}}</td>
+              <td>{{user.email}}</td>
+              <td>
+                <v-btn flat>
+                  Manage
+                  <v-menu activator="parent">
+                    <v-list>
+                      <v-list-item v-on:click="e => editUser(user)" prepend-icon="mdi-pencil">
+                        <v-list-item-content>Update</v-list-item-content>
+                      </v-list-item>
+                      <v-list-item v-on:click="e => deleteUser(user._id)" prepend-icon="mdi-delete">
+                        <v-list-item-content>Delete</v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
 
         <v-dialog v-model="dialog" persistent max-width="600px">
           <v-card>
@@ -38,100 +49,99 @@
               <span class="headline">{{editing ? 'Edit user' : 'Create a new user'}}</span>
             </v-card-title>
             <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex xs12 sm6>
-                    <v-text-field label="First name" required autofocus v-model="newUser.firstName"/>
-                  </v-flex>
-                  <v-flex xs12 sm6>
-                    <v-text-field label="Last name" v-model="newUser.lastName" />
-                  </v-flex>
-                  <v-flex xs12 sm6>
-                    <v-text-field type="email" label="Email address" v-model="newUser.email" />
-                  </v-flex>
-                  <v-flex xs12 sm6>
-                    <v-text-field type="password" label="Password" hint="This can be changed later." v-model="newUser.password" />
-                  </v-flex>
-                </v-layout>
+              <div class="d-flex">
+                <v-text-field class="mr-2" label="First name" required autofocus v-model="newUser.firstName"/>
+                <v-text-field class="mr-2" label="Last name" v-model="newUser.lastName" />
+              </div>
+              <div class="d-flex">
+                <v-text-field class="mr-2" type="email" label="Email address" v-model="newUser.email" />
+                <v-text-field type="password" label="Password" hint="This can be changed later." v-model="newUser.password" />
+              </div>
 
-                <div v-if="attributes.length">
-                  <h3>Extra attributes</h3>
-                  <p>Specifying a value for an attribute below will include that value in assertions made during the SSO process, overriding the attribute's default value. Leave values here blank to send the default attribute value instead.</p>
+              <div v-if="attributes.length" class="mt-10">
+                <h3>Additional user attributes</h3>
+                <p>Specifying a value for an attribute below will include that value in assertions made during the SSO process, overriding the attribute's default value. Leave a value blank to send the default attribute value instead.</p>
 
-                  <v-layout>
-                    <v-flex xs12 sm6 v-for="attribute in attributes">
-                      <v-text-field :label="attribute.name" :hint="`Default value: ${attribute.defaultValue ? `'${attribute.defaultValue}'` : 'none'}`" v-model="newUser.attributes[attribute._id]" />
-                    </v-flex>
-                  </v-layout>
+                <div class="d-flex flex-wrap mt-5">
+                  <div class="mr-2 w-25" v-for="attribute in attributes">
+                    <v-text-field :label="attribute.name" :hint="`Default value: ${attribute.defaultValue ? `'${attribute.defaultValue}'` : 'none'}`" v-model="newUser.attributes[attribute._id]" />
+                  </div>
                 </div>
-              </v-container>
+              </div>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="dialog = false">Cancel</v-btn>
-              <v-btn color="blue darken-1" dark @click="create">{{editing ? 'Save' : 'Create'}}</v-btn>
+              <v-btn  @click="dialog = false">Cancel</v-btn>
+              <v-btn color="primary" dark @click="create">{{editing ? 'Save' : 'Create'}}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-card-text>
     </v-card>
 
-    <h2 style="margin-top:30px;">Extra attributes</h2>
-    <p>Manage custom attributes that can be passed to the Service Provider during sign-on.</p>
-    <v-btn color='primary' style="float:right;" v-on:click="openAttributeDialog"><v-icon>add</v-icon> New attribute</v-btn>
-    <div style="clear:both;margin-bottom: 20px;" />
+    <v-card class="mt-10">
+      <v-card-title primary-title><h3>Additional user attributes</h3></v-card-title>
+      <v-card-text>
+        <p class="mb-2">Manage custom attributes that can be passed to the Service Provider during sign-on. These attributes are in addition to the core user account attributes (such as first name, last name, and email address).</p>
 
-    <v-data-table :loading="loadingAttributes" hide-actions class="elevation-1" :headers="attributeTableHeaders" :items="attributes">
-      <template v-slot:items="props">
-        <td>{{props.item.name}}</td>
-        <td>{{props.item.defaultValue}}</td>
-        <td>{{props.item.samlMapping}}</td>
-        <td>
-          <v-menu offset-y transition="slide-y-transition">
-	    <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on">settings</v-icon>
-	    </template>
-	    <v-list>
-	      <v-list-tile v-on:click="e => editAttribute(props.item)">
-		<v-list-tile-title><v-icon>edit</v-icon> Update</v-list-tile-title>
-	      </v-list-tile>
-              <v-list-tile v-on:click="e => deleteAttribute(props.item._id)">
-		<v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
-	      </v-list-tile>
-	    </v-list>
-	  </v-menu>
-        </td>
-      </template>
-    </v-data-table>
+        <div class="d-flex justify-end mt-5 mb-b">
+          <v-btn color='primary' v-on:click="openAttributeDialog" prepend-icon="mdi-plus">New attribute</v-btn>
+        </div>
 
-    <v-dialog v-model="attributeDialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{editingAttribute ? 'Edit attribute' : 'Create a new custom attribute'}}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12 sm6>
-                <v-text-field label="Name" required autofocus v-model="newAttribute.name" hint="We'll use this as the attribute name in the assertion unless a mapping is provided." />
-              </v-flex>
-              <v-flex xs12 sm6>
+        <v-table :loading="loadingAttributes">
+          <thead>
+            <tr>
+              <th>Human name</th>
+              <th>Attribute key</th>
+              <th>Default value</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="attribute in attributes" key="attribute._id">
+              <td>{{attribute.name}}</td>
+              <td>{{attribute.samlMapping}}</td>
+              <td>{{attribute.defaultValue}}</td>
+              <td>
+                <v-btn flat>
+                  Manage
+                  <v-menu activator="parent">
+                    <v-list>
+                      <v-list-item v-on:click="e => editAttribute(attribute)" prepend-icon="mdi-pencil">
+                        <v-list-item-content>Update</v-list-item-content>
+                      </v-list-item>
+                      <v-list-item v-on:click="e => deleteAttribute(attribute._id)" prepend-icon="mdi-delete">
+                        <v-list-item-content>Delete</v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+
+        <v-dialog v-model="attributeDialog" persistent max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{editingAttribute ? 'Edit attribute' : 'Create a new custom attribute'}}</span>
+            </v-card-title>
+            <v-card-text>
+              <div class="dd-flex">
+                <v-text-field label="Human-readable name" required autofocus v-model="newAttribute.name" hint="We'll use this as the attribute key unless a mapping is provided." />
+                <v-text-field label="Attribute key" v-model="newAttribute.samlMapping" hint="Values for this attribute will be sent with this key during the SSO process." />
                 <v-text-field label="Default value" v-model="newAttribute.defaultValue" hint="If not overridden in the user itself, this value will be sent as a default."/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="SAML2 mapping (optional)" v-model="newAttribute.samlMapping" hint="If provided, we'll label the attribute value with this name in SAML2 assertions." />
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="attributeDialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" dark @click="createAttribute">{{editingAttribute ? 'Save' : 'Create'}}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click="attributeDialog = false">Cancel</v-btn>
+              <v-btn color="primary" @click="createAttribute">{{editingAttribute ? 'Save' : 'Create'}}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-card-text>
+    </v-card>
 
   </div>
 </template>

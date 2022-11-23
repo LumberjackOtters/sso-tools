@@ -5,7 +5,7 @@
       <h1 style="margin-bottom:30px">{{idp && idp.name}}</h1>
 
       <div class="d-block d-sm-flex">
-        <div>
+        <div class="mb-10">
           <v-card v-if="idp">
             <v-list>
               <v-list-item exact :to="`/idps/${idp._id}`" prepend-icon="mdi-home">
@@ -39,7 +39,7 @@
           <v-btn block class="mt-5" :href="`https://idp.sso.tools/${idp?.code}`" target="_blank" prepend-icon="mdi-open-in-new">Open IdP dashboard</v-btn>
         </div>
 
-        <div class="ml-5" style="flex: 1">
+        <div class="ml-sm-5" style="flex: 1">
           <div v-if="idp">
             <router-view :idp="idp" @onUpdateIdp="updateIdp"/>
           </div>
