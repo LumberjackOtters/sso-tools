@@ -2,8 +2,6 @@
   <div>
     <v-container>
 
-      <v-layout style="margin-top: 50px;" :justify-center="true">
-        <v-flex xs12 md8>
 
           <div v-if="page === 0">
             <div style="text-align:center; margin-bottom: 30px;">
@@ -25,7 +23,7 @@
               <p>You're currently in the SSO Tools sandbox, which means that if you end your browser session you'll lose access to your IdP. If you want to come back to continue working on this IdP at a later date, we recommend creating an account to secure it and to save your progress.</p>
             </v-alert>
 
-            <v-alert type="error" :value="error">
+            <v-alert type="error" v-if="error">
               <h3>Could not create IdP</h3>
               <p>{{error}}</p>
             </v-alert>
@@ -41,73 +39,47 @@
             <p>Register a user with {{name}}. This user will be able to login via your IdP and access your connected apps.</p>
             <p>You can always add more users later.</p>
 
-            <p><strong>Note that you cannot use your normal SSO Tools account to authenticate against your IdP.</strong> You can safely use dummy information for your users, since we won't be emailing them!</p>
+            <p class="mt-10"><strong>Note that you cannot use your normal SSO Tools account to authenticate against your IdP.</strong> You can safely use dummy information for your users, since we won't be emailing them!</p>
 
-            <v-layout wrap style="margin: 30px auto;">
-              <v-flex xs12 sm6>
-                <v-text-field autofocus v-model="newUser.firstName" label="First name" required placeholder="Jane"></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field v-model="newUser.lastName" label="Last name" required placeholder="Doe"></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field v-model="newUser.email" label="Email address" required placeholder="jane@example.com"></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field v-model="newUser.password" label="Account password" required type='password' placeholder="password"></v-text-field>
-              </v-flex>
-            </v-layout>
-
-            <v-btn @click="skip">Skip this step</v-btn>
-
+            <div class="d-block d-sm-flex flex-wrap mt-10 mb-10">
+                <v-text-field class="mr-2" autofocus v-model="newUser.firstName" label="First name" required placeholder="Jane"></v-text-field>
+                <v-text-field class="mr-2" v-model="newUser.lastName" label="Last name" required placeholder="Doe"></v-text-field>
+                <v-text-field class="mr-2" v-model="newUser.email" label="Email address" required placeholder="jane@example.com"></v-text-field>
+                <v-text-field class="mr-2" v-model="newUser.password" label="Account password" required type='password' placeholder="password"></v-text-field>
+            </div>
+            <v-btn @click="skip" class="mr-2">Skip this step</v-btn>
             <v-btn :loading="creating" color='primary' v-on:click="createUser">Next</v-btn>
           </div>
 
           <div v-if="page === 2" style="text-align:center;">
             <h4>Step 3</h4>
-            <h1>Connect an app</h1>
-            <p>If you know the SAML2 settings for a service provider, you can them below to connect it to this IdP.</p>
-            <p>You can find this IdP's own SAML settings after this setup. You can always add more apps later too.</p>
+            <h1>Create an app</h1>
+            <p>If you already have an app you'd like to connect to SSO Tools, you can add it below.</p>
+            <p>You can find and modify its SSO settings later.</p>
 
-            <v-layout wrap style="margin: 30px auto;">
-              <v-flex xs12 sm6>
-                <v-text-field label="Friendly name" required autofocus v-model="newSP.name" hint="To help you identify this SP." placeholder="My Service"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Service URL" v-model="newSP.serviceUrl" hint="The URL used to access your service. For example, for a webapp, you can just use your website URL." placeholder="https://sp.example.com"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="EntityID" v-model="newSP.entityId" hint="This is a URL to uniquely identify your service. It is sometimes the same as the metadata URL." placeholder="https://sp.example.com/metdadata"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="ACS URL" v-model="newSP.callbackUrl" hint="Assertion Consumer Service, or callback URL using the HTTP POST binding." placeholder="https://sp.example.com/callback"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Logout URL (optional)" v-model="newSP.logoutUrl" hint="The URL we will redirect IdP-initiated logout requests to." placeholder="https://sp.example.com/logout"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Logout callback URL (optional)" v-model="newSP.logoutCallbackUrl" hint="The URL we will redirect users to after an SP-initiated logout." placeholder="https://sp.example.com/logout/callback"/>
-              </v-flex>
-            </v-layout>
-            <v-btn @click="skip">Skip this step</v-btn>
-
+            <div class="d-block d-sm-flex flex-wrap mt-10 mb-10">
+              <v-text-field class="mr-2" label="Friendly name" required autofocus v-model="newSP.name" hint="To help you identify this SP." placeholder="My Service"/>
+              <v-text-field label="Service URL" v-model="newSP.serviceUrl" hint="Your app's URL" placeholder="https://myapp.com"/>
+            </div>
+            <v-btn @click="skip" class="mr-2">Skip this step</v-btn>
             <v-btn :loading="creating" color='primary' v-on:click="createSP">Next</v-btn>
           </div>
 
-          <div v-if="page === 3" style="text-align:center;">
+          <div v-if="page === 3" class="w-100 mt-15 ml-auto mr-auto text-center">
             <h1>All done!</h1>
             <p>Your new IdP is ready.</p>
 
-            <h3 style="margin-top: 50px;">What would you like to do now?</h3>
+            <h3 class="ma-10">What would you like to do now?</h3>
 
-            <div style="margin-bottom:20px;"> <v-btn color='primary' :to="`/idps/${this._id}`">View IdP</v-btn></div>
-            <div><v-btn fluid :to="`/idps/${this._id}/saml`">View SAML2 setup</v-btn></div>
-            <div><v-btn :to="`/idps/${this._id}/users`">Add more users</v-btn></div>
-            <div><v-btn :to="`/idps/${this._id}/sps`">Manage apps</v-btn></div>
+            <div class="mb-5"> <v-btn color='primary' :to="`/idps/${this._id}`">View IdP</v-btn></div>
+
+            <div class="d-block d-sm-flex flex-wrap mt-10 justify-center">
+              <v-btn class="ma-2" fluid :to="`/idps/${this._id}/saml`">View SAML2 setup</v-btn>
+              <v-btn class="ma-2" :to="`/idps/${this._id}/users`">Add more users</v-btn>
+              <v-btn class="ma-2" :to="`/idps/${this._id}/sps`">Manage apps</v-btn>
+            </div>
           </div>
 
-        </v-flex>
-      </v-layout>
     </v-container>
 
   </div>

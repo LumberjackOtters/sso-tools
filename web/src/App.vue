@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app>
+    <v-app class="d-flex flex-row">
 
       <div class="d-flex justify-space-between align-center pl-4 pr-4">
         <div>
@@ -46,11 +46,11 @@
         </div>
       </div>
 
-      <div style="min-height:100vh;">
+      <div class="flex-grow-1">
         <router-view></router-view>
       </div>
 
-      <v-footer class="bg-indigo-lighten-1 mt-10 d-block d-sm-flex justify-space-between">
+      <v-footer class="bg-indigo-lighten-1 mt-10 d-block d-sm-flex justify-space-between flex-grow-0">
         <img :src="logoLight" style="height:50px;"/>
         <div>
           <v-btn flat dark to='/privacy' class="mr-2">Privacy Policy</v-btn>
