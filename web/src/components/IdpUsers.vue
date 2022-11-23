@@ -128,8 +128,8 @@
             </v-card-title>
             <v-card-text>
               <div class="dd-flex">
-                <v-text-field label="Human-readable name" required autofocus v-model="newAttribute.name" hint="We'll use this as the attribute key unless a mapping is provided." />
-                <v-text-field label="Attribute key" v-model="newAttribute.samlMapping" hint="Values for this attribute will be sent with this key during the SSO process." />
+                <v-text-field class="mb-2" label="Human-readable name" required autofocus v-model="newAttribute.name" hint="We'll use this as the attribute key unless a mapping is provided." />
+                <v-text-field class="mb-2" label="Attribute key" v-model="newAttribute.samlMapping" hint="Values for this attribute will be sent with this key during the SSO process." />
                 <v-text-field label="Default value" v-model="newAttribute.defaultValue" hint="If not overridden in the user itself, this value will be sent as a default."/>
               </div>
             </v-card-text>

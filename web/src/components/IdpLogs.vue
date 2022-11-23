@@ -1,12 +1,12 @@
 <template>
   <div>
-    <p>Below you'll find the latest requests and responses logged by SSOTools for your IdP. Requests are logged in JSON format and are encoded into XML for SAML2 transport.</p> 
-    <v-alert :value="true" type="info">Checking the logs can be useful in debugging your SSO setup. You can use it to compare against what you are sending or receiving in your application.</v-alert>
+    <p>Below you'll find the latest requests and responses logged by SSOTools for your IdP. Requests are logged in JSON format and are encoded into XML for SAML2 transport.</p>
+    <v-alert class="mt-5" type="info">Checking the logs can be useful in debugging your SSO setup. You can use it to compare against what you are sending or receiving in your application.</v-alert>
 
-    <v-btn v-on:click="fetchLogs" style="margin: 10px 0px;"><v-icon>refresh</v-icon> Refresh logs</v-btn>
+    <v-btn v-on:click="fetchLogs" class="mt-10 mb-10"><v-icon>refresh</v-icon> Refresh logs</v-btn>
 
     <v-alert v-if="!logs.length" :value="true" border="left" color="blue-grey" dark>No requests have been logged against this IdP yet.</v-alert>
-    
+
     <v-card v-for="log in logs" :key="log._id" style="padding: 5; margin-bottom: 15px">
       <v-card-title primary-title>
         <v-layout row wrap style="font-weight: bold;">
