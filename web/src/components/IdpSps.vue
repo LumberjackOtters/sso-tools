@@ -1,74 +1,70 @@
 <template>
   <div>
-    <h2>Apps connected to your IdP</h2>
-    <p>If you are creating a single sign-on facility in your application you can register it as a service provider here in order to test the connection.</p>
+    <p>Register an app (e.g. your website or mobile app) here in order to connect it to your IdP.</p>
 
-    <v-alert :value="true" type="info">Users registered with this IdP will only be able to access the apps regisered below.</v-alert>
+    <v-alert class="mt-5" icon="mdi-information">Users registered with this IdP will only be able to access the apps listed below.</v-alert>
 
-    <v-btn color='primary' style="float:right;" v-on:click="openDialog"><v-icon>add</v-icon> Register a new SP</v-btn>
-    <div style="clear:both;margin-bottom: 20px;" />
+    <div class="d-flex justify-end mt-5 mb-b">
+      <v-btn color='primary' v-on:click="openDialog" prepend-icon="mdi-plus">New app</v-btn>
+    </div>
 
-    <v-data-table :loading="loadingSps" hide-actions class="elevation-1" :headers="tableHeaders" :items="sps">
-      <template v-slot:items="props">
-        <td>{{props.item.name}}</td>
-        <td>
-        EntityID: {{props.item.entityId}}<br />
-        Service: {{props.item.serviceUrl}}<br />
-        Consumer: {{props.item.callbackUrl}}<br />
-        Logout: {{props.item.logoutUrl}}<br />
-        Logout callback: {{props.item.logoutCallbackUrl}}
-        </td>
-        <td>
-	  <v-menu offset-y transition="slide-y-transition">
-	    <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on">settings</v-icon>
-	    </template>
-	    <v-list>
-	      <v-list-tile v-on:click="e => editSp(props.item)">
-		<v-list-tile-title><v-icon>edit</v-icon> Update</v-list-tile-title>
-	      </v-list-tile>
-              <v-list-tile v-on:click="e => deleteSp(props.item._id)">
-		<v-list-tile-title><v-icon>delete</v-icon> Delete</v-list-tile-title>
-	      </v-list-tile>
-	    </v-list>
-	  </v-menu>  
-        </td>
-      </template>
-    </v-data-table>
+    <v-table :items="sps" v-if="sps.length">
+      <thead>
+        <tr>
+          <th>App name</th>
+          <th>Configuration</th>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="app in sps"  key="app._id">
+          <td>{{app.name}} <br />
+            <span class="text-grey">{{app.serviceUrl}}</span>
+          </td>
+          <td>
+            <span v-if="app.entityId">EntityID: {{app.entityId}}</span>
+            <span v-if="app.callbackUrl"><br />Consumer: {{app.callbackUrl}}</span>
+            <span v-if="app.logoutUrl"><br />Logout: {{app.logoutUrl}}</span>
+            <span v-if="app.logoutCallbackUrl"><br />Logout callback: {{app.logoutCallbackUrl}}</span>
+          </td>
+          <td>
+            <v-btn flat>
+              Manage
+              <v-menu activator="parent">
+                <v-list>
+                  <v-list-item v-on:click="e => editSp(app)" prepend-icon="mdi-pencil">
+                    <v-list-item-content>Update</v-list-item-content>
+                  </v-list-item>
+                  <v-list-item v-on:click="e => deleteSp(app._id)" prepend-icon="mdi-delete">
+                    <v-list-item-content>Delete</v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
 
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{editing ? 'Edit Service Provider': 'Register a Service Provider for use with this IDP'}}</span>
+          <span class="headline">{{editing ? 'Edit app': 'Register an app for use with this IDP'}}</span>
         </v-card-title>
         <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12 sm6>
-                <v-text-field label="Friendly name" required autofocus v-model="newSP.name" hint="To help you identify this SP." placeholder="My Service"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Service URL" v-model="newSP.serviceUrl" hint="The URL used to access your service. For example, for a webapp, you can just use your website URL." placeholder="https://sp.example.com"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="EntityID" v-model="newSP.entityId" hint="This is a URL to uniquely identify your service. It is sometimes the same as the metadata URL." placeholder="https://sp.example.com/metdadata"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="ACS URL" v-model="newSP.callbackUrl" hint="Assertion Consumer Service, or callback URL using the HTTP POST binding." placeholder="https://sp.example.com/callback"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Logout URL (optional)" v-model="newSP.logoutUrl" hint="The URL we will redirect IDP-initiated logout requests to." placeholder="https://sp.example.com/logout"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Logout callback URL (optional)" v-model="newSP.logoutCallbackUrl" hint="The URL we will redirect users to after an SP-initiated logout." placeholder="https://sp.example.com/logout/callback"/>
-              </v-flex>
-            </v-layout>
-          </v-container>
+          <v-text-field class="mb-2" label="Human-readable name" required autofocus v-model="newSP.name" hint="To help you identify this app." placeholder="My Service"/>
+          <v-text-field class="mb-2" label="Service URL" v-model="newSP.serviceUrl" hint="The URL used to access your service. For example, for a webapp, you can just use your website URL." placeholder="https://sp.example.com"/>
+
+          <h3 class="mb-2">SAML2 settings (optional)</h3>
+          <v-text-field class="mb-2" label="EntityID" v-model="newSP.entityId" hint="This is a URL to uniquely identify your service. It is sometimes the same as the metadata URL." placeholder="https://sp.example.com/metdadata"/>
+          <v-text-field class="mb-2" label="ACS URL" v-model="newSP.callbackUrl" hint="Assertion Consumer Service, or callback URL using the HTTP POST binding." placeholder="https://sp.example.com/callback"/>
+          <v-text-field class="mb-2" label="Logout URL" v-model="newSP.logoutUrl" hint="The URL we will redirect IDP-initiated logout requests to." placeholder="https://sp.example.com/logout"/>
+          <v-text-field label="Logout callback URL" v-model="newSP.logoutCallbackUrl" hint="The URL we will redirect users to after an SP-initiated logout." placeholder="https://sp.example.com/logout/callback"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" flat @click="create">{{editing ? 'Save': 'Create'}}</v-btn>
+          <v-btn @click="dialog = false">Cancel</v-btn>
+          <v-btn color="primary" @click="create">{{editing ? 'Save': 'Create'}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

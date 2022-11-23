@@ -2,7 +2,7 @@
   <div>
     <v-container grid-list-lg>
       <h3>Manage Identity Provider</h3>
-      <h1 style="margin-bottom:30px">{{idp && idp.name}}</h1>
+      <h1 class="mb-10">{{idp && idp.name}}</h1>
 
       <div class="d-block d-sm-flex">
         <div class="mb-10">
