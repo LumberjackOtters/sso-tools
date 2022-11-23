@@ -1,28 +1,22 @@
 <template>
   <v-container>
-    <h1 style="margin-bottom: 20px;">Your account</h1>
+    <h1>Your account</h1>
 
-    <v-card style="margin-bottom: 20px;">
+    <v-card class="mt-10">
       <v-card-title><span class="headline">About you</span></v-card-title>
       <v-card-text>
-        <v-container grid-list-md>
-          <v-layout wrap>
-            <v-flex xs12 sm6>
-              <v-text-field label="First name" v-model="user.firstName" />
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field label="Last name" v-model="user.lastName" />
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field label="Email address" v-model="user.email"/>
-            </v-flex>
-            <p>Please note that if you change your email address we will notify both your old and new addresses.</p>
-          </v-layout>
-          <v-alert :value="error" type="error">
-            <h4>Unable to update your profile</h4>
-            <p>{{error}}</p>
-          </v-alert>
-        </v-container>
+        <div class="d-flex mt-5">
+          <v-text-field class="mr-2" label="First name" v-model="user.firstName" />
+          <v-text-field label="Last name" v-model="user.lastName" />
+        </div>
+        <div class="d-flex mt-2">
+          <v-text-field class="w-50" label="Email address" v-model="user.email"/>
+        </div>
+        <p>Please note that if you change your email address we will notify both your old and new addresses.</p>
+        <v-alert v-if="error" type="error">
+          <h4>Unable to update your profile</h4>
+          <p>{{error}}</p>
+        </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -30,28 +24,22 @@
       </v-card-actions>
     </v-card>
 
-    <v-card style="margin-bottom: 20px;">
+    <v-card class="mt-10">
       <v-card-title><span class="headline">Password</span></v-card-title>
       <v-card-text>
-        <v-container grid-list-md>
-          <p>Change the password associated with your SSO Tools account. This does not affect the accounts of any IDP users you may manage.</p>
-          <v-layout wrap>
-            <v-flex xs12 sm6>
-              <v-text-field type="password" label="Current password" v-model="currentPassword" />
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field :type="showPassword ? 'text' : 'password'" label="New password (8+ characters)" v-model="newPassword" :append-icon="showPassword ? 'visibility' : 'visibility_off'" @click:append="showPassword = !showPassword"/>
-            </v-flex>
-          </v-layout>
-          <v-alert :value="passwordError" type="error">
-            <h4>Unable to change your password</h4>
-            <p>{{passwordError}}</p>
-          </v-alert>
-          <v-alert :value="passwordSuccess" type="success">
-            <h4>Password updated successfully</h4>
-            <p>Use your new password next time you login.</p>
-          </v-alert>
-        </v-container>
+        <p>Change the password associated with your SSO Tools account. This does not affect the accounts of any IDP users you may manage.</p>
+        <div class="d-flex mt-5">
+          <v-text-field class="mr-2" type="password" label="Current password" v-model="currentPassword" />
+          <v-text-field :type="showPassword ? 'text' : 'password'" label="New password (8+ characters)" v-model="newPassword" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="showPassword = !showPassword"/>
+        </div>
+        <v-alert v-if="passwordError" type="error">
+          <h4>Unable to change your password</h4>
+          <p>{{passwordError}}</p>
+        </v-alert>
+        <v-alert v-if="passwordSuccess" type="success">
+          <h4>Password updated successfully</h4>
+          <p>Use your new password next time you login.</p>
+        </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -59,22 +47,16 @@
       </v-card-actions>
     </v-card>
 
-    <v-card>
+    <v-card class="mt-10">
       <v-card-title><span class="headline">Delete your account</span></v-card-title>
       <v-card-text>
-        <v-container grid-list-md>
-          <p>If you delete your SSO Tools account, we'll also delete your account content. This includes Identity Providers, Service Providers, and any IdP users you have created.</p>
-          <p>To continue, please enter your account password.</p>
-          <v-layout wrap>
-            <v-flex xs12 sm6>
-              <v-text-field type="password" label="Current password" v-model="deletePassword" />
-            </v-flex>
-          </v-layout>
-          <v-alert :value="deleteError" type="error">
-            <h4>Unable to delete your account</h4>
-            <p>{{deleteError}}</p>
-          </v-alert>
-        </v-container>
+        <p>If you delete your SSO Tools account, we'll also delete your account content. This includes Identity Providers, Service Providers, and any IdP users you have created.</p>
+        <p>To continue, please enter your account password.</p>
+        <v-text-field class="mt-5" type="password" label="Current password" v-model="deletePassword" />
+        <v-alert v-if="deleteError" type="error">
+          <h4>Unable to delete your account</h4>
+          <p>{{deleteError}}</p>
+        </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
