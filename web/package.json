@@ -7,6 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@mdi/font": "^7.0.96",
     "core-js": "^2.6.5",
     "moment": "^2.29.3",
     "vue": "^3.2.45",

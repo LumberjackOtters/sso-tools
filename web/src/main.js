@@ -5,9 +5,11 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 import App from './App.vue'
-import 'vuetify/dist/vuetify.min.css'
+//import 'vuetify/dist/vuetify.min.css'
+import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 
 import Home from './components/Home.vue';
 import ResetPassword from './components/ResetPassword.vue';
@@ -87,6 +89,13 @@ const router = createRouter({
 const vuetify = createVuetify({
   components,
   directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    }
+  },
 })
 
 const app = createApp(App)

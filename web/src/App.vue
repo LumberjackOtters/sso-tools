@@ -2,17 +2,18 @@
   <div id="app">
     <v-app>
 
-      <v-layout justify-content='space-between'>
-        <v-flex>
+      <div class="d-flex justify-space-between align-center pl-4 pr-4">
+        <div>
           <router-link :to="loggedIn ? '/dashboard' : '/'">
             <img :src="logo" style="height:50px;"/>
           </router-link>
-        </v-flex>
-        <v-flex>
+        </div>
+        <div class="d-none d-sm-block">
           <div>
-            <v-btn icon to="/dashboard"><v-icon icon="explore"></v-icon></v-btn>
-
-            <v-menu offset-y transition="slide-y-transition" v-if="user">
+            <v-btn flat to="/dashboard" class="mr-2"
+              icon="mdi-compass"
+            ></v-btn>
+            <v-menu offset-y transition="slide-y-transition" v-if="user" class="mr-2">
               <template v-slot:activator="{ on }">
                 <v-btn icon="mdi-explore" v-on="on"></v-btn>
               </template>
@@ -50,22 +51,19 @@
             <v-btn flat v-on:click="openLogin" v-if="!loggedIn">Login</v-btn>
             <v-btn color="teal" dark v-on:click="openRegister" v-if="!loggedIn">Create a free account</v-btn>
           </div>
-        </v-flex>
-      </v-layout>
+        </div>
+      </div>
 
       <div style="min-height:100vh;">
         <router-view></router-view>
       </div>
 
-      <v-footer dark height="auto">
-        <v-card class="flex" flat tile>
-          <v-card-title class="teal">
-            <img :src="logoLight" style="height:50px;"/>
-            <v-spacer></v-spacer>
-            <v-btn flat dark to='/privacy'>Privacy Policy</v-btn>
-            <v-btn flat dark to="terms">Terms of Use</v-btn>
-          </v-card-title>
-        </v-card>
+      <v-footer class="bg-indigo-lighten-1 mt-10 d-block d-sm-flex justify-space-between">
+        <img :src="logoLight" style="height:50px;"/>
+        <div>
+          <v-btn flat dark to='/privacy' class="mr-2">Privacy Policy</v-btn>
+          <v-btn flat dark to="/terms">Terms of Use</v-btn>
+        </div>
       </v-footer>
 
       <v-dialog v-model="registerOpen" persistent max-width="600px">
@@ -74,38 +72,34 @@
             <span class="headline">Create a free account</span>
           </v-card-title>
           <v-card-text>
-            <p>Welcome to SSO Tools!</p>
+            <h4>Welcome to SSO Tools!</h4>
             <p>Registering takes less than a minute and we'll automatically associate the IDPs and other settings you've already setup with your new account.</p>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6>
-                  <v-text-field label="First name" required autofocus v-model="newUser.firstName"/>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field label="Last name" v-model="newUser.lastName" />
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field type="email" label="Email address" v-model="newUser.email" />
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field :type="showPassword ? 'text' : 'password'" label="Password" v-model="newUser.password" :append-icon="showPassword ? 'visibility' : 'visibility_off'" @click:append="toggleShowPassword"/>
-                </v-flex>
-              </v-layout>
 
-              <v-card>
-                <v-card-text>
-                  <p>We collect this information from you for the sole purpose of creating and maintaining your account, and it will not be used for marketing purposes without your consent. Our Privacy Policy describes how we process your data in more detail.</p>
-                  <v-btn to="/privacy" @click="closeRegister">Privacy Policy</v-btn>
+            <div class="d-flex mt-5">
+              <v-text-field class="mr-2" label="First name" required autofocus v-model="newUser.firstName"/>
+              <v-text-field label="Last name" v-model="newUser.lastName" />
+            </div>
+            <div class="d-flex mt-5">
+              <v-text-field class="mr-2" type="email" label="Email address" v-model="newUser.email" />
+              <v-text-field :type="showPassword ? 'text' : 'password'" hint="At least 8 characters" label="Password" v-model="newUser.password" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="toggleShowPassword"/>
+            </div>
+
+            <v-card>
+              <v-card-text>
+                <p>We collect this information from you for the sole purpose of creating and maintaining your account, and it will not be used for marketing purposes without your consent. Our Privacy Policy describes how we process your data in more detail.</p>
+                <div class="d-flex mt-5">
+                  <v-btn class="mr-2" to="/privacy" @click="closeRegister">Privacy Policy</v-btn>
                   <v-btn to="terms" @click="closeRegister">Terms of Use</v-btn>
-                 <v-checkbox v-model="newUser.termsAgreed" label="I have read and I agree to the SSO Tools Privacy Policy and Terms of Use" required></v-checkbox>
-                </v-card-text>
-              </v-card>
+                </div>
+                <p class="mt-5">Please indicate below that you have read and you agree to the Privacy Policy and Terms of Use (the "terms").</p>
+                <v-checkbox v-model="newUser.termsAgreed" label="I have read and agree to the terms" required></v-checkbox>
+              </v-card-text>
+            </v-card>
 
-              <v-alert :value="registerError" type="error">
-                <h4>Unable to register this account</h4>
-                <p>{{registerError}}</p>
-              </v-alert>
-            </v-container>
+            <v-alert class="mt-5" v-if="registerError" type="error">
+              <h4>Unable to register this account</h4>
+              <p>{{registerError}}</p>
+            </v-alert>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -122,40 +116,36 @@
           </v-card-title>
           <v-card-text>
             <p>Welcome back!</p>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6>
-                  <v-text-field type="email" label="Email address" v-model="loginData.email" />
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field type="password" label="Password" @keyup.enter="login" v-model="loginData.password" />
-                </v-flex>
-              </v-layout>
+            <div class="d-flex mt-5">
+              <v-text-field class="mr-2" type="email" label="Email address" v-model="loginData.email" />
+              <v-text-field type="password" label="Password" @keyup.enter="login" v-model="loginData.password" />
+            </div>
+            <div class="d-flex justify-end mb-5">
+              <v-btn @click="forgotPassword" flat>Forgotten your password?</v-btn>
+            </div>
 
-              <v-btn @click="forgotPassword" flat style="float:right;">Forgotten your password?</v-btn>
-              <div style="clear:both;" />
-              <v-alert :value="loginError" type="error">
-                <h4>Unable to login</h4>
-                <p>{{loginError}}</p>
-              </v-alert>
-            </v-container>
+            <v-alert v-if="loginError" type="error">
+              <h4>Unable to login</h4>
+              <p>{{loginError}}</p>
+            </v-alert>
+
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="secondary" flat @click="closeLogin">Cancel</v-btn>
+            <v-btn color="secondary" @click="closeLogin">Cancel</v-btn>
             <v-btn color="primary" @click="login" :loading="loggingIn">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="forgottenPasswordOpen" persistent max-width="300px">
+      <v-dialog v-model="forgottenPasswordOpen" persistent max-width="500px">
         <v-card>
           <v-card-title>
             <span class="headline">Forgotten your SSO Tools password?</span>
           </v-card-title>
           <v-card-text>
             <p>No problem. Enter the email address of your account below, and if it exists we'll send a password-reset link to you.</p>
-            <v-text-field type="email" label="Email address" v-model="loginData.email" />
+            <v-text-field class="mt-5" type="email" label="Email address" v-model="loginData.email" />
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
