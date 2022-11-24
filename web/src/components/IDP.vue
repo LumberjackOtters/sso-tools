@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container grid-list-lg>
+    <v-container>
       <h3>Manage Identity Provider</h3>
       <h1 class="mb-10">{{idp && idp.name}}</h1>
 

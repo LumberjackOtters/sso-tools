@@ -3,8 +3,8 @@
     <v-container fluid="true">
       <h1>Welcome back<span v-if="user">, {{user.firstName}}</span></h1>
 
-      <v-row class="mt-10">
-        <v-col xs="12" sm="4">
+      <div class="d-block d-sm-flex mt-10">
+        <div class="mr-sm-2 mb-4" style="max-width: 350px">
           <v-alert v-if="loggedIn" color="blue-darken-1" icon="mdi-flash">
             <h3>Thanks for being a member!</h3>
             <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
@@ -19,9 +19,9 @@
               <v-btn v-on:click="login">Login</v-btn>
             </div>
           </v-alert>
-        </v-col>
+        </div>
 
-        <v-col xs="12" sm="8">
+        <div class="flex-grow-1">
           <div style="text-align:center;margin-top:50px;" v-if="loading">
             <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
           </div>
@@ -51,8 +51,8 @@
               </div>
             </div>
           </div>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
     </v-container>
   </div>

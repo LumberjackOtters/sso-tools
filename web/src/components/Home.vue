@@ -64,12 +64,12 @@
     </div>
 
     <div class="d-flex flex-column align-center bg-indigo-lighten-5 mt-16 pa-10 rounded-lg elevation-5">
-      <div class="w-50">
+      <div class="w-75">
         <h1>Features &amp; roadmap</h1>
         <p>SSO Tools is offered as a free service. For any questions, or to get in touch, please do so via <a href="mailto:hello@sso.tools" target="_blank" rel="noopener noreferrer">email</a>.</p>
       </div>
 
-      <div class="d-flex mt-10">
+      <div class="d-block d-sm-flex mt-10">
         <div class="mr-2">
           <h3>What you get now</h3>
           <v-list>
@@ -82,7 +82,7 @@
           </v-list>
         </div>
 
-        <div>
+        <div class="mt-5 mt-sm-0">
           <h3>What's coming</h3>
           <v-list>
             <v-list-item v-for="item in roadmap" :key="item" avatar>
