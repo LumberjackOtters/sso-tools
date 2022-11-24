@@ -122,23 +122,16 @@ export default {
     return {
       landingImage, usersImage, secureImage, samlImage,
       features: [
-        'Account-less sandbox', 'Create unlimited IdPs', 'Register apps/SPs with your IdPs', 'Register users with your IdPs', 'Support for custom user attributes', 'Support for specifying custom attribute mappings', 'IdP authentication', 'IdP- and SP-initiated SAML2 sign-on', 'SAML2 ForceAuthn respected', 'SP-initiated log-out'
+        'Create unlimited IdPs and apps', 'Support for custom user attributes & mappings', 'IdP- and SP-initiated SAML2 sign-on', 'SAML2 ForceAuthn respected', 'SP-initiated log-out', 'Request and response logging'
       ],
       roadmap: [
-        'Request and response logging',
+        'OAuth2 and OpenID Connect support',
         'Full SAML2 SLO process (i.e. log-out all signed-in SPs)',
         'Improved certificate/signature handling',
         'Support for automatic metadata registration',
         'Support for metadata download',
-        'OpenID Connect support',
-        'Support for creating SPs for testing IdPs'
       ],
     }
-  },
-  created (){
-  },
-  methods: {
-
   },
 }
 </script>

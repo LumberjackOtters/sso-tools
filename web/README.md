@@ -15,9 +15,19 @@ yarn
 The front-end can then be run using:
 
 ```shell
-yarn serve
+yarn start
 ```
 
-Once running, the webapp will be available on port 8080.
+Once running, the webapp will be available on port 3300.
 
 **Note:** This webapp expects to be able to connect to a local API running on port 6002.
+
+## Build for production
+
+Build the web assets:
+
+```shell
+yarn build
+```
+
+Then simply upload the contents of the `dist/` directory to your webserver or host of choice.
