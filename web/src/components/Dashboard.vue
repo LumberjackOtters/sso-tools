@@ -4,16 +4,22 @@
       <h1>Welcome back<span v-if="user">, {{user.firstName}}</span></h1>
 
       <div class="d-block d-sm-flex mt-10">
-        <div class="mr-sm-2 mb-4" style="max-width: 350px">
-          <v-alert v-if="loggedIn" color="blue-darken-1" icon="mdi-flash">
+        <div class="mr-sm-4 mb-4" style="max-width: 350px">
+          <v-alert icon="mdi-party-popper" v-if="!loggedIn" class="mb-5">
+            <h3>Want to help out?</h3>
+            <p>SSO Tools is provided for free but costs money to maintain, build, and run. If you find it useful then you may like to consider supporting it!</p>
+            <v-btn block class="mt-3 umami--click--support-button-dashboard" prepend-icon="mdi-coffee" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Buy me a coffee</v-btn>
+          </v-alert>
+
+          <v-alert v-if="loggedIn" color="green-darken-1" icon="mdi-flash">
             <h3>Thanks for being a member!</h3>
             <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
           </v-alert>
 
-          <v-alert v-if="!loggedIn" type="warning" >
+          <v-alert v-if="!loggedIn" color="orange-darken-3" >
             <h3>Hey! Listen!</h3>
             <p class="mb-4">You're currently using SSO Tools in sandbox mode as a non-member.</p>
-            <p>This is totally fine, but it means that you'll lose access to any IDPs, SPs, and other settings you create if and when your session ends. Login or create a new account to save your progress.</p>
+            <p>This is fine but you'll lose access to your IDPs and other settings when your session ends. You can login or create a new account to save your work.</p>
             <div class="mt-5">
               <v-btn class="mr-2" color="teal" dark v-on:click="register">Register</v-btn>
               <v-btn v-on:click="login">Login</v-btn>

@@ -10,6 +10,7 @@
         </div>
         <div class="d-none d-sm-flex align-center">
           <div>
+            <v-btn color='indigo-lighten-2' class='mr-2 umami--click--support-button-navbar' variant='outlined' prepend-icon="mdi-party-popper" v-if="loggedIn" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Support SSO Tools</v-btn>
             <v-btn flat to="/dashboard" class="mr-4" color="primary" variant='outline'>Dashboard</v-btn>
             <v-btn color='indigo-lighten-2' flat icon v-if="loggedIn">
               <v-icon icon="mdi-account" />
@@ -51,8 +52,9 @@
       <v-footer class="bg-indigo-lighten-1 mt-10 d-block d-sm-flex justify-space-between flex-grow-0">
         <img :src="logoLight" style="height:50px;"/>
         <div>
-          <v-btn flat dark to='/privacy' class="mr-2">Privacy Policy</v-btn>
-          <v-btn flat dark to="/terms">Terms of Use</v-btn>
+          <v-btn size='small' class="ma-1 umami--click--support-button-footer" prepend-icon="mdi-party-popper" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Support SSO Tools</v-btn>
+          <v-btn size='small' variant='outlined' dark to='/privacy' class="ma-1">Privacy Policy</v-btn>
+          <v-btn size='small' variant='outlined' dark to="/terms" class="ma-1">Terms of Use</v-btn>
         </div>
       </v-footer>
 
