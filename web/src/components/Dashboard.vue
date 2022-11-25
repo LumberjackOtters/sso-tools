@@ -76,10 +76,17 @@ export default {
     }
   },
   computed: {
-    user () { return this.$store.state.user; },
+    user () {
+      const user = this.$store.state.user;
+      if (user)
+        api.req('GET', `/idps`, null, resp => {
+          this.idps = resp.idps;
+        });
+      return user;
+    },
     loggedIn () {
       return this.$store.state.loggedIn;
-    }
+    },
   },
   created (){
     let unsavedIdps = [];
