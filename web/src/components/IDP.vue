@@ -30,17 +30,17 @@
                 <v-list-item-content>SAML2 configuration</v-list-item-content>
               </v-list-item>
 
-              <v-list-item :to="`/idps/${idp._id}/logs`" prepend-icon="mdi-format-list-bulleted">
+              <v-list-item :to="`/idps/${idp._id}/saml/logs`" prepend-icon="mdi-format-list-bulleted">
                 <v-list-item-content>SAML2 logs</v-list-item-content>
               </v-list-item>
 
               <v-divider></v-divider>
 
-              <v-list-item :to="`/idps/${idp._id}/oauth2`" prepend-icon="mdi-swap-horizontal">
+              <v-list-item :to="`/idps/${idp._id}/oauth`" prepend-icon="mdi-swap-horizontal">
                 <v-list-item-content>OAuth2 configuration</v-list-item-content>
               </v-list-item>
 
-              <v-list-item :to="`/idps/${idp._id}/oauth2/logs`" prepend-icon="mdi-format-list-bulleted">
+              <v-list-item :to="`/idps/${idp._id}/oauth/logs`" prepend-icon="mdi-format-list-bulleted">
                 <v-list-item-content>OAuth2 logs</v-list-item-content>
               </v-list-item>
               </v-list>

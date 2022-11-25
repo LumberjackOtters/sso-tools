@@ -21,7 +21,9 @@ import IDPUsers from './components/IdpUsers.vue';
 import IDPSettings from './components/IdpSettings.vue';
 import IDPSPs from './components/IdpSps.vue';
 import IDPSAML from './components/IdpSaml.vue';
-import IDPLogs from './components/IdpLogs.vue';
+import IDPSAMLLogs from './components/IdpSamlLogs.vue';
+import IDPOAuth from './components/IdpOauth.vue';
+import IDPOAuthLogs from './components/IdpOauthLogs.vue';
 
 import PrivacyPolicy from './components/legal/PrivacyPolicy.vue';
 import TermsOfUse from './components/legal/TermsOfUse.vue';
@@ -80,7 +82,9 @@ const router = createRouter({
       { path: 'settings', component: IDPSettings },
       { path: 'sps', component: IDPSPs },
       { path: 'saml', component: IDPSAML },
-      { path: 'logs', component: IDPLogs }
+      { path: 'saml/logs', component: IDPSAMLLogs },
+      { path: 'oauth', component: IDPOAuth },
+      { path: 'oauth/logs', component: IDPOAuthLogs },
     ] },
   ]
 })
