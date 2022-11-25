@@ -1,4 +1,5 @@
-import bcrypt, re
+from uuid import uuid4
+import bcrypt, re, random, string
 from OpenSSL import crypto
 import pymongo
 from bson.objectid import ObjectId
@@ -124,6 +125,8 @@ def create_sp(user, id, data):
     'callbackUrl': data.get('callbackUrl'),
     'logoutUrl': data.get('logoutUrl'),
     'logoutCallbackUrl': data.get('logoutCallbackUrl'),
+    'oauth2ClientId': str(uuid4()),
+    'oauth2ClientSecret': str(''.join(random.choices(string.ascii_uppercase + string.digits, k=32))),
     'idp': id
   }
   result = db.idpSps.insert_one(sp)

@@ -12,7 +12,8 @@
       <thead>
         <tr>
           <th>App name</th>
-          <th>Configuration</th>
+          <th>SAML2 configuration</th>
+          <th>OAuth2 configuration</th>
           <th />
         </tr>
       </thead>
@@ -26,6 +27,13 @@
             <span v-if="app.callbackUrl"><br />Consumer: {{app.callbackUrl}}</span>
             <span v-if="app.logoutUrl"><br />Logout: {{app.logoutUrl}}</span>
             <span v-if="app.logoutCallbackUrl"><br />Logout callback: {{app.logoutCallbackUrl}}</span>
+          </td>
+          <td>
+            <v-alert size="small" v-if="!app.oauth2ClientId">
+              This app was not created with a OAuth2 configuration.
+            </v-alert>
+            <span v-if="app.oauth2ClientId">Client ID: {{app.oauth2ClientId}}</span>
+            <span v-if="app.oauth2ClientSecret"><br />Client secret: {{app.oauth2ClientSecret}}</span>
           </td>
           <td>
             <v-btn flat>
