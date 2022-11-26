@@ -404,11 +404,12 @@ app.post('/:code/oauth2/login', async (req, res) => {
   }
   const sessionId = uuidv4();
   await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
+  res.append('Set-Cookie', `sessionId=${sessionId}; Path=/`);
 
   return await confirmScopes(res, request.scope, req.body.requestId, thisIdp, thisSp);
 });
 
-// Handle Oauth2 login form
+// Handle Oauth2 scope confirmation
 app.post('/:code/oauth2/confirm', async (req, res) => {
   const OauthRequests = await database.collection('oauthRequests');
   const request = await OauthRequests.findOne({'_id': ObjectId(req.body.requestId)});
@@ -426,7 +427,8 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
     return loginForm(res, 'oauth2/login', req.body.requestId, thisIdp, thisSp, 'You need to be logged-in to access this page.');
   }
 
-  const result = await OauthRequests.insertOne({
+  const oauthCode = Math.random().toString(16).substr(2, 16);
+  await OauthRequests.insertOne({
     createdAt: new Date(),
     idp: thisIdp._id,
     sp: thisSp._id,
@@ -434,11 +436,11 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
     scope: request.scope,
     redirectUri: request.redirectUri,
     clientId: request.clientId,
+    code: oauthCode,
   });
 
-  const oauthCode = Math.random().toString(16).substr(2, 16);
   const OauthSessions = await database.collection('oauthSessions');
-  const sessionResult = await OauthRequests.insertOne({
+  await OauthSessions.insertOne({
     createdAt: new Date(),
     idp: thisIdp._id,
     sp: thisSp._id,
@@ -450,6 +452,64 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
   res.redirect(`${request.redirectUri}?code=${oauthCode}`);
 });
 
+// Handle Oauth2 token request
+app.post('/:code/oauth2/token', async (req, res) => {
+  const clientId = req.query.client_id;
+  const clientSecret = req.query.client_secret;
+  const code = req.query.code;
+  const redirectUri = req.query.redirect_uri;
+  const grantType = req.query.grant_type;
+  if (!clientId) return errorPage(res, 'Client ID is required');
+  if (!clientSecret) return errorPage(res, 'Client secret is required');
+  if (!redirectUri) return errorPage(res, 'Redirect URI is required');
+  if (!code) return errorPage(res, 'Authorization code is required');
+  if (grantType !== 'authorization_code') return errorPage(res, 'Grant type must equal "authorization_code"');
+
+  const thisIdp = await getIdp(req.params.code);
+  if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
+
+  const OauthSessions = await database.collection('oauthSessions');
+  const oauthSession = await OauthSessions.findOne({code: code, idp: thisIdp._id});
+  if (!oauthSession) return errorPage(res, `No valid OAuth2 session is available with these details.`, 404);
+
+  const IdpSps = await database.collection('idpSps');
+  const thisSp = await IdpSps.findOne({_id: oauthSession.sp, clientId: clientId, clientSecret: clientSecret});
+  if (!thisSp) return errorPage(res, `A service provider matching your information could not be found. Please check your client ID and secret`);
+
+  // Prepare ID Token (if in scope) and access token
+  const returnData = {};
+  if (oauthSession.scope.indexOf('openid') > -1) {
+    returnData['id_token'] = null;
+  }
+  returnData['access_token'] = null;
+
+  const OauthRequests = await database.collection('oauthRequests');
+  await OauthRequests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    type: 'tokenRequest',
+    scope: oauthSession.scope,
+    code: oauthCode,
+  });
+  await OauthRequests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    type: 'tokenResponse',
+    scope: oauthSession.scope,
+    data: returnData,
+  });
+  await OauthSessions.updateOne({_id: oauthSession._id}, {$set: {accessToken: returnData['access_token']}});
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(returnData)
+  };
+});
 
 /*
     GENERAL LOGIN / LOGOUT HANDLERS
