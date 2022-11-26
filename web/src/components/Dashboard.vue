@@ -11,7 +11,7 @@
             <v-btn block class="mt-3 umami--click--support-button-dashboard" prepend-icon="mdi-coffee" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Buy me a coffee</v-btn>
           </v-alert>
 
-          <v-alert v-if="loggedIn" color="green-darken-1" icon="mdi-flash">
+          <v-alert v-if="loggedIn" color="primary" icon="mdi-flash">
             <h3>Thanks for being a member!</h3>
             <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
           </v-alert>
