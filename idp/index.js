@@ -1,5 +1,5 @@
 const express = require('express')
-const { ObjectId } = require('mongodb'); // or ObjectID 
+const { ObjectId } = require('mongodb'); // or ObjectID
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid/v4');
 const cookieParser = require('cookie-parser')
@@ -12,6 +12,12 @@ const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const SCOPES = {
+  'openid': 'SSO Tools will issue a token containing your basic account details to the service provider',
+  'email': 'Allow the service provider to read the email address associated with your account',
+  'profile': 'Allow the service provider to read the name and other attributes associated with your account',
+};
+
 function pageTemplate(content) {
   return `<!DOCTYPE html><html><head>
     <title>SSO Tools IDP</title>
@@ -22,13 +28,12 @@ function pageTemplate(content) {
   </head><body> <div class="container">${content}</div></body></html>`;
 }
 
-function loginForm(res, requestId, currentIdp, currentSp, error) {
+function loginForm(res, postPath, requestId, currentIdp, currentSp, error) {
   res.status(error ? 401 : 200).send(
     pageTemplate(
-      `<h2>${currentSp ? `Login to access ${currentSp.name}`:'Login'}</h2><h5>You're authenticating with ${currentIdp ? currentIdp.name: ''}</h5> 
-      ${currentSp ? '<p>After you\'ve logged-in, you\'ll be redirected back to '+currentSp.name+'.</p>' : ''}
+      `<h2>${currentSp ? `Login to access ${currentSp.name}`:'Login'}</h2><h5>You're authenticating with ${currentIdp ? currentIdp.name: ''}</h5>
       ${error ? `<p style="color:red;">${error}</p>` : ''}
-      <form method="post" action="/${currentIdp && currentIdp.code}/${currentSp ? `saml/login` : 'login'}">
+      <form method="post" action="/${currentIdp && currentIdp.code}/${currentSp ? postPath : 'login'}">
       <input name="email" type="email" placeholder="Email address"/> <input name="password" type="password" placeholder="Password"/>
       <input name="requestId" type="hidden" value="${requestId}" />
       <button type="submit" value="Login" class="waves-effect waves-light btn">Login</button>
@@ -36,6 +41,26 @@ function loginForm(res, requestId, currentIdp, currentSp, error) {
     ),
   );
 }
+
+function confirmScopes(res, scope, requestId, currentIdp, currentSp, error) {
+    const requestScopes = [];
+    scope.forEach(s => {
+      if (SCOPES[s]) requestScopes.push(SCOPES[s]);
+    });
+    const requestScopesHtml = requestScopes.map(s => s && `<p>- ${s}</p>`).join(' ');
+    res.status(error ? 401 : 200).send(
+      pageTemplate(
+        `<h2>${currentSp?.name} is requesting access to your ${currentIdp?.name} account</h2>
+        <h5>Please confirm that you authorize the following:</h5>
+        ${requestScopesHtml}
+        <form method="post" action="/${currentIdp?.code}/oauth2/confirm">
+        <input name="requestId" type="hidden" value="${requestId}" />
+        <button type="submit" value="Login" class="waves-effect waves-light btn">Authorize</button>
+        </form>`
+      ),
+    );
+  }
+
 
 function errorPage(res, message, status) {
   res.status(status || 400).send(pageTemplate(`<h4>There was a problem fulfilling your request.</h3><h4>${message}</h4>`));
@@ -134,7 +159,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
 app.get('/:code', async (req, res) => {
   const thisIdp = await getIdp(req.params.code);
   if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
-  const user = await getUser(req, thisIdp); 
+  const user = await getUser(req, thisIdp);
 
   const sps = [];
   if (user) {
@@ -153,7 +178,7 @@ app.get('/:code', async (req, res) => {
         <table>
           <thead><tr><th>Name</th><th></th></thead>
           <tbody>
-            ${sps.map(s => 
+            ${sps.map(s =>
               `<tr>
               <td>${s.name}</td>
               <td style="text-align:right;"><a class='btn blue' href="${s.serviceUrl}">Visit Service</a><a class='btn green' href="https://idp.sso.tools/${thisIdp.code}/saml/login/initiate?entityId=${s.entityId}" style="margin-left: 10px;">IDP-initiated login</a></td></tr>`
@@ -173,6 +198,11 @@ app.get('/:code', async (req, res) => {
     `}
   </div>`));
 });
+
+
+/*
+    SAML2 HANDLERS
+*/
 
 // Received login request from SP
 app.get('/:code/saml/login/request', async (req, res) => {
@@ -201,7 +231,7 @@ app.get('/:code/saml/login/request', async (req, res) => {
         type: 'loginRequest',
         data: info.login
       });
-      
+
       if (!info.login.forceAuthn) {
         const user = await getUser(req, thisIdp);
         if (user) {
@@ -211,7 +241,7 @@ app.get('/:code/saml/login/request', async (req, res) => {
           return await sendAssertion(res, user, info.login.id, thisIdp, thisSp, sessionId);
         }
       }
-      return loginForm(res, info.login.id, thisIdp, thisSp);
+      return loginForm(res, 'saml/login', info.login.id, thisIdp, thisSp);
     }
   }
   catch(err) {
@@ -234,7 +264,7 @@ app.get('/:code/saml/logout/request', async (req, res) => {
     }
     if (info.logout) {
       const fields = info.logout;
-      
+
       const IdpSps = await database.collection('idpSps');
       const thisSp = await IdpSps.findOne({idp: thisIdp._id, entityId: fields.issuer});
       if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration. For reference, the issuer of the authentication request is "${fields.issuer}"`);
@@ -254,12 +284,12 @@ app.get('/:code/saml/logout/request', async (req, res) => {
       if (user.email.toLowerCase() !== fields.nameId.toLowerCase()) return errorPage(res, 'The currently logged-in user does not match the user making the logout request.', 403);
 
       const IdpUsers = await database.collection('idpUsers');
-      await IdpUsers.updateOne({_id: user._id}, {$unset: {sessionIds: ''}});  
+      await IdpUsers.updateOne({_id: user._id}, {$unset: {sessionIds: ''}});
 
       const encodedResponse = Buffer.from(fields.response).toString('base64');
       return {
         statusCode: 302,
-        headers: { 
+        headers: {
           'Location': `${thisSp.serviceUrl ? `${thisSp.serviceUrl}?SAMLResponse=${encodedResponse}` : `/${thisIdp.code}`}`,
           'Set-Cookie': 'sessionId=deleted; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
         },
@@ -294,8 +324,8 @@ app.get('/:code/saml/login/initiate', async (req, res) => {
 app.post('/:code/saml/login', async (req, res) => {
   const Requests = await database.collection('requests');
   const request = await Requests.findOne({'data.id': req.body.requestId});
-  if (!request) return loginForm(res, req.body.requestId, null, null, 'This login request is not valid.');
-  
+  if (!request) return loginForm(res, 'saml/login', req.body.requestId, null, null, 'This login request is not valid.');
+
   const thisIdp = await getIdp(req.params.code);
   if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
 
@@ -307,13 +337,123 @@ app.post('/:code/saml/login', async (req, res) => {
   const user = await IdpUsers.findOne({email: req.body.email.toLowerCase(), idp: thisIdp._id });
 
   if (!user || !bcrypt.compareSync(req.body.password, user.password.toString())) {
-    return loginForm(res, req.body.requestId, thisIdp, thisSp, 'The email address or password is incorrect. Remember that you need to login as a user registered with the IDP, and not your SSO Tools account.');
+    return loginForm(res, 'saml/login', req.body.requestId, thisIdp, thisSp, 'The email address or password is incorrect. Remember that you need to login as a user registered with the IDP, and not your SSO Tools account.');
   }
   const sessionId = uuidv4();
   await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
 
   return await sendAssertion(res, user, request.data.id, thisIdp, thisSp, sessionId);
 });
+
+
+/*
+    OAUTH2 HANDLERS
+*/
+
+// Handle requests to SP-initiated login for OAuth2
+app.get('/:code/oauth2/authorize', async (req, res) => {
+  const clientId = req.query.client_id;
+  const scope = req.query.scope && req.query.scope.split(',');
+  const redirectUri = req.query.redirect_uri;
+  const responseType = req.query.response_type;
+  if (!clientId) return errorPage(res, 'No client ID was provided');
+  if (!redirectUri) return errorPage(res, 'Redirect URI is required');
+  if (responseType !== 'code') return errorPage(res, 'Response type must equal "code"');
+
+  const thisIdp = await getIdp(req.params.code);
+  if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
+  const IdpSps = await database.collection('idpSps');
+  const thisSp = await IdpSps.findOne({ oauth2ClientId: clientId });
+  if (!thisSp) return errorPage(res, 'The client ID you provided is invalid');
+
+  const OauthRequests = await database.collection('oauthRequests');
+  const result = await OauthRequests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    type: 'authorizeRequest',
+    scope: scope,
+    redirectUri: redirectUri,
+    clientId: clientId,
+  });
+
+  const user = await getUser(req, thisIdp);
+  if (!user) {
+    return loginForm(res, 'oauth2/login', result.insertedId, thisIdp, thisSp, `Please login to ${thisIdp.name} in order to continue to ${thisSp.name}`);
+  }
+});
+
+// Handle Oauth2 login form
+app.post('/:code/oauth2/login', async (req, res) => {
+  const OauthRequests = await database.collection('oauthRequests');
+  const request = await OauthRequests.findOne({'_id': ObjectId(req.body.requestId)});
+  if (!request) return loginForm(res, 'oauth2/login', req.body.requestId, null, null, 'This login request is not valid.');
+
+  const thisIdp = await getIdp(req.params.code);
+  if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
+
+  const IdpSps = await database.collection('idpSps');
+  const thisSp = await IdpSps.findOne({idp: thisIdp._id, _id: request.sp});
+  if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration.`);
+
+  const IdpUsers = await database.collection('idpUsers');
+  const user = await IdpUsers.findOne({email: req.body.email.toLowerCase(), idp: thisIdp._id });
+
+  if (!user || !bcrypt.compareSync(req.body.password, user.password.toString())) {
+    return loginForm(res, 'oauth2/login', req.body.requestId, thisIdp, thisSp, 'The email address or password is incorrect. Remember that you need to login as a user registered with the IDP, and not your SSO Tools account.');
+  }
+  const sessionId = uuidv4();
+  await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
+
+  return await confirmScopes(res, request.scope, req.body.requestId, thisIdp, thisSp);
+});
+
+// Handle Oauth2 login form
+app.post('/:code/oauth2/confirm', async (req, res) => {
+  const OauthRequests = await database.collection('oauthRequests');
+  const request = await OauthRequests.findOne({'_id': ObjectId(req.body.requestId)});
+  if (!request) return loginForm(res, 'oauth2/login', req.body.requestId, null, null, 'This login request is not valid.');
+
+  const thisIdp = await getIdp(req.params.code);
+  if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
+
+  const IdpSps = await database.collection('idpSps');
+  const thisSp = await IdpSps.findOne({idp: thisIdp._id, _id: request.sp});
+  if (!thisSp) return errorPage(res, `The Service Provider requesting authentication is not currently registered with the IDP ${thisIdp.name}. If you think you are seeing this message in error, please check your Service Provider configuration.`);
+
+  const user = await getUser(req, thisIdp);
+  if (!user) {
+    return loginForm(res, 'oauth2/login', req.body.requestId, thisIdp, thisSp, 'You need to be logged-in to access this page.');
+  }
+
+  const result = await OauthRequests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    type: 'authorizedScope',
+    scope: request.scope,
+    redirectUri: request.redirectUri,
+    clientId: request.clientId,
+  });
+
+  const oauthCode = Math.random().toString(16).substr(2, 16);
+  const OauthSessions = await database.collection('oauthSessions');
+  const sessionResult = await OauthRequests.insertOne({
+    createdAt: new Date(),
+    idp: thisIdp._id,
+    sp: thisSp._id,
+    user: user._id,
+    scope: request.scope,
+    code: oauthCode,
+  });
+
+  res.redirect(`${request.redirectUri}?code=${oauthCode}`);
+});
+
+
+/*
+    GENERAL LOGIN / LOGOUT HANDLERS
+*/
 
 // Login to IdP
 app.post('/:code/login', async (req, res) => {
@@ -324,7 +464,7 @@ app.post('/:code/login', async (req, res) => {
   const user = await IdpUsers.findOne({email: req.body.email.toLowerCase(), idp: thisIdp._id });
 
   if (!user || !bcrypt.compareSync(req.body.password, user.password.toString())) {
-    return loginForm(res, null, thisIdp, null, 'The email address or password is incorrect. Remember that you need to login as a user registered with the IDP, and not your SSO Tools account.');
+    return loginForm(res, 'login', 'null', thisIdp, null, 'The email address or password is incorrect. Remember that you need to login as a user registered with the IDP, and not your SSO Tools account.');
   }
   const sessionId = uuidv4();
   await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
@@ -338,7 +478,7 @@ app.get('/:code/logout', async (req, res) => {
   const user = await getUser(req, thisIdp);
   if (user) {
     const IdpUsers = await database.collection('idpUsers');
-    await IdpUsers.updateOne({_id: user._id}, {$unset: {sessionIds: ''}});  
+    await IdpUsers.updateOne({_id: user._id}, {$unset: {sessionIds: ''}});
   }
   res.append('Set-Cookie', 'sessionId=deleted; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
   res.redirect(`/${thisIdp.code}`);
