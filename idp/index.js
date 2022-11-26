@@ -42,7 +42,7 @@ function loginForm(res, postPath, requestId, currentIdp, currentSp, error) {
   );
 }
 
-function confirmScopes(res, scope, requestId, currentIdp, currentSp, error) {
+function confirmScopes(res, user, scope, requestId, currentIdp, currentSp, error) {
     const requestScopes = [];
     scope.forEach(s => {
       if (SCOPES[s]) requestScopes.push(SCOPES[s]);
@@ -51,6 +51,7 @@ function confirmScopes(res, scope, requestId, currentIdp, currentSp, error) {
     res.status(error ? 401 : 200).send(
       pageTemplate(
         `<h2>${currentSp?.name} is requesting access to your ${currentIdp?.name} account</h2>
+        ${user ? `<p>You're currently logged-in as ${user.firstName} ${user.lastName}</p>` : ''}
         <h5>Please confirm that you authorize the following:</h5>
         ${requestScopesHtml}
         <form method="post" action="/${currentIdp?.code}/oauth2/confirm">
@@ -366,6 +367,8 @@ app.get('/:code/oauth2/authorize', async (req, res) => {
   const thisSp = await IdpSps.findOne({ oauth2ClientId: clientId });
   if (!thisSp) return errorPage(res, 'The client ID you provided is invalid');
 
+  if (thisSp.oauth2RedirectUri !== redirectUri) return errorPage(res, `The Redirect URI specified doesn't match what is registered for this service provider`, 400);
+
   const OauthRequests = await database.collection('oauthRequests');
   const result = await OauthRequests.insertOne({
     createdAt: new Date(),
@@ -381,6 +384,7 @@ app.get('/:code/oauth2/authorize', async (req, res) => {
   if (!user) {
     return loginForm(res, 'oauth2/login', result.insertedId, thisIdp, thisSp, `Please login to ${thisIdp.name} in order to continue to ${thisSp.name}`);
   }
+  return await confirmScopes(res, user, scope, result.insertedId, thisIdp, thisSp);
 });
 
 // Handle Oauth2 login form
@@ -406,7 +410,7 @@ app.post('/:code/oauth2/login', async (req, res) => {
   await IdpUsers.updateOne({_id: user._id}, {$addToSet: {sessionIds: sessionId}});
   res.append('Set-Cookie', `sessionId=${sessionId}; Path=/`);
 
-  return await confirmScopes(res, request.scope, req.body.requestId, thisIdp, thisSp);
+  return await confirmScopes(res, user, request.scope, req.body.requestId, thisIdp, thisSp);
 });
 
 // Handle Oauth2 scope confirmation

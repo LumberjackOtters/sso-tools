@@ -34,6 +34,7 @@
             </v-alert>
             <span v-if="app.oauth2ClientId">Client ID: {{app.oauth2ClientId}}</span>
             <span v-if="app.oauth2ClientSecret"><br />Client secret: {{app.oauth2ClientSecret}}</span>
+            <span v-if="app.oauth2RedirectUri"><br />Redirect URI: {{app.oauth2RedirectUri}}</span>
           </td>
           <td>
             <v-btn flat>
@@ -67,7 +68,10 @@
           <v-text-field class="mb-2" label="EntityID" v-model="newSP.entityId" hint="This is a URL to uniquely identify your service. It is sometimes the same as the metadata URL." placeholder="https://sp.example.com/metdadata"/>
           <v-text-field class="mb-2" label="ACS URL" v-model="newSP.callbackUrl" hint="Assertion Consumer Service, or callback URL using the HTTP POST binding." placeholder="https://sp.example.com/callback"/>
           <v-text-field class="mb-2" label="Logout URL" v-model="newSP.logoutUrl" hint="The URL we will redirect IDP-initiated logout requests to." placeholder="https://sp.example.com/logout"/>
-          <v-text-field label="Logout callback URL" v-model="newSP.logoutCallbackUrl" hint="The URL we will redirect users to after an SP-initiated logout." placeholder="https://sp.example.com/logout/callback"/>
+          <v-text-field class="mb-2" label="Logout callback URL" v-model="newSP.logoutCallbackUrl" hint="The URL we will redirect users to after an SP-initiated logout." placeholder="https://sp.example.com/logout/callback"/>
+
+          <h3 class="mb-2">OAuth2 settings (optional)</h3>
+          <v-text-field class="mb-2" label="Redirect URI" v-model="newSP.oauth2RedirectUri" hint="The URI users will be redirected to after successful authorization." placeholder="https://myapp.com/oauth/callback"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -91,7 +95,7 @@ export default {
       sps: [],
       loadingSps: false,
       tableHeaders: [{ text: 'Name' }, { text: 'URLs' }, { text: '' }],
-      newSP: { name: '', entityId: '', serviceUrl: '', callbackUrl: '', logoutUrl: '', logoutCallbackUrl: '' },
+      newSP: { name: '', entityId: '', serviceUrl: '', callbackUrl: '', logoutUrl: '', logoutCallbackUrl: '',  oauth2RedirectUri: ''},
       dialog: false,
       editing: false,
     }
@@ -107,11 +111,11 @@ export default {
     openDialog (event) {
       this.dialog = true;
       this.editing = false;
-      this.newSP = { name: '', entityId: '', serviceUrl: '', callbackUrl: '', logoutUrl: '', logoutCallbackUrl: '' };
+      this.newSP = { name: '', entityId: '', serviceUrl: '', callbackUrl: '', logoutUrl: '', logoutCallbackUrl: '', oauth2RedirectUri: '' };
     },
     create (event) {
-      const { _id, name, entityId, serviceUrl, callbackUrl, logoutUrl, logoutCallbackUrl } = this.newSP;
-      const data = {name, entityId, serviceUrl, callbackUrl, logoutUrl, logoutCallbackUrl};
+      const { _id, name, entityId, serviceUrl, callbackUrl, logoutUrl, logoutCallbackUrl, oauth2RedirectUri } = this.newSP;
+      const data = {name, entityId, serviceUrl, callbackUrl, logoutUrl, logoutCallbackUrl, oauth2RedirectUri};
       if (_id && this.editing) {
         api.req('PUT', `/idps/${this.idp._id}/sps/${_id}`, data, resp => {
           this.sps.map(s => {

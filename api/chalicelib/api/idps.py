@@ -127,6 +127,7 @@ def create_sp(user, id, data):
     'logoutCallbackUrl': data.get('logoutCallbackUrl'),
     'oauth2ClientId': str(uuid4()),
     'oauth2ClientSecret': str(''.join(random.choices(string.ascii_uppercase + string.digits, k=32))),
+    'oauth2RedirectUri': data.get('oauth2RedirectUri'),
     'idp': id
   }
   result = db.idpSps.insert_one(sp)
@@ -150,6 +151,7 @@ def update_sp(user, id, sp_id, data):
     'callbackUrl': data.get('callbackUrl'),
     'logoutUrl': data.get('logoutUrl'),
     'logoutCallbackUrl': data.get('logoutCallbackUrl'),
+    'oauth2RedirectUri': data.get('oauth2RedirectUri'),
   }
   db.idpSps.update({'_id': sp_id}, {'$set': update_data})
   return db.idpSps.find_one({'_id': sp_id}, {'name': 1, 'entityId': 1, 'serviceUrl': 1, 'callbackUrl': 1, 'logoutUrl': 1, 'logoutCallbackUrl': 1})
