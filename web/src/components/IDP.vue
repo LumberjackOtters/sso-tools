@@ -40,6 +40,10 @@
                 <v-list-item-content>OAuth2 configuration</v-list-item-content>
               </v-list-item>
 
+              <v-list-item :to="`/idps/${idp._id}/oauth/guide`" prepend-icon="mdi-lifebuoy">
+                <v-list-item-content>OAuth2 setup guide</v-list-item-content>
+              </v-list-item>
+
               <v-list-item :to="`/idps/${idp._id}/oauth/logs`" prepend-icon="mdi-format-list-bulleted">
                 <v-list-item-content>OAuth2 logs</v-list-item-content>
               </v-list-item>
