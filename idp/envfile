@@ -1,2 +1,3 @@
 export MONGO_URL="mongodb://localhost"
 export MONGO_DATABASE="ssotools"
+export JWT_SECRET="4n6RkmA9B3x82sCBnmpzMCt9kaAQ66SYZtV"

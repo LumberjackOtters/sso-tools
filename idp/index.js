@@ -4,9 +4,12 @@ const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid/v4');
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const database = require('./database.js');
 const idp = require('./idp.js');
+
+JWT_SECRET = process.env.JWT_SECRET;
 
 const app = express();
 app.use(cookieParser());
@@ -479,13 +482,19 @@ app.post('/:code/oauth2/token', async (req, res) => {
   const IdpSps = await database.collection('idpSps');
   const thisSp = await IdpSps.findOne({_id: oauthSession.sp, clientId: clientId, clientSecret: clientSecret});
   if (!thisSp) return errorPage(res, `A service provider matching your information could not be found. Please check your client ID and secret`);
+  if (thisSp.oauth2RedirectUri !== redirectUri) return errorPage(res, `The Redirect URI specified doesn't match what is registered for this service provider`, 400);
+
+  const IdpUsers = await database.collection('idpUsers');
+  const user = await IdpUsers.findOne({_id: oauthSession.user});
+  if (!user) return errorPage(res, 'Could not find the user associated with this session', 404);
 
   // Prepare ID Token (if in scope) and access token
   const returnData = {};
   if (oauthSession.scope.indexOf('openid') > -1) {
-    returnData['id_token'] = null;
+    returnData['id_token'] = jwt.sign({ sub: user.email }, JWT_SECRET);
   }
-  returnData['access_token'] = null;
+  returnData['access_token'] = Math.random().toString(16).substr(2, 65);
+  console.log(returnData);
 
   const OauthRequests = await database.collection('oauthRequests');
   await OauthRequests.insertOne({
