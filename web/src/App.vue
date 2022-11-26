@@ -53,6 +53,7 @@
         <img :src="logoLight" style="height:50px;"/>
         <div>
           <v-btn size='small' class="ma-1 umami--click--support-button-footer" prepend-icon="mdi-party-popper" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Support SSO Tools</v-btn>
+          <v-btn size='small' variant='outlined' dark href='https://git.wilw.dev/wilw/sso-tools' target='_blank' rel='noopener noreferrer' class="ma-1">Source code</v-btn>
           <v-btn size='small' variant='outlined' dark to='/privacy' class="ma-1">Privacy Policy</v-btn>
           <v-btn size='small' variant='outlined' dark to="/terms" class="ma-1">Terms of Use</v-btn>
         </div>

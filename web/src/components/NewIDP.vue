@@ -1,11 +1,9 @@
 <template>
   <div>
-    <v-container>
-
-
+    <v-container class="ml-auto mr-auto" style="max-width: 600px">
           <div v-if="page === 0">
             <div style="text-align:center; margin-bottom: 30px;">
-              <h1>Create a new identity provider (IdP)</h1>
+              <h1 class="mb-10">Create a new identity provider (IdP)</h1>
               <p>IdPs are the core of the single sign-on system. They maintain user identities (profile information and passwords) and are where the actual user authentication takes place.</p>
               <p>You can connect your apps (service providers) to your IdP in order to give them single sign-on functionality.</p>
             </div>
@@ -14,8 +12,8 @@
             <p>A human-friendly identifier you can use to recognise the IdP.</p>
             <v-text-field v-model="name" label="Friendly name" required autofocus ></v-text-field>
 
-            <h3>Issuer &amp; IdP location</h3>
-            <p>This is a URL that uniquely identifies the IdP on the Internet. We'll host it at the idp.sso.tools subdomain with a path of your choice. The path must be unique and "URL friendly" (i.e. generally letters and numbers).</p>
+            <h3>Issuer name</h3>
+            <p>This is a unique machine-friendly name (letters and numbers only) for your IdP. We'll use this to host your IdP on the internet, and it can always be changed later.</p>
             <v-text-field v-model="code" label="Issuer" required placeholder="myidp" prefix="https://idp.sso.tools/" ></v-text-field>
 
             <v-alert type="info" :value="true" v-if="!loggedIn">
