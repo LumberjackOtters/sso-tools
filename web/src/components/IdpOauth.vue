@@ -7,6 +7,7 @@
       <h4 class="mb-2">Useful URLs for this IdP</h4>
       <v-text-field readonly label="Authorization URL (where to send users to login)" :model-value="`https://idp.sso.tools/${idp.code}/oauth2/authorize`" />
       <v-text-field readonly label="Token URL (where to exchange an authorization token for an ID/access token)" :model-value="`https://idp.sso.tools/${idp.code}/oauth2/token`" />
+      <v-text-field readonly label="Example API URL (to test validity of the access token)" :model-value="`https://idp.sso.tools/${idp.code}/api/users/me`" />
 
       <h4 class="mt-5">The following scopes can be requested</h4>
       <v-list lines="two">
@@ -23,6 +24,8 @@
           subtitle="The IdP will send an ID token, along with the access token, containing scoped profile claims"
         ></v-list-item>
       </v-list>
+
+      <v-alert class="mt-5"><strong>Coming soon:</strong> An "offline_access" scope for managing OAuth2 token-refresh flows.</v-alert>
     </div>
 
   </div>

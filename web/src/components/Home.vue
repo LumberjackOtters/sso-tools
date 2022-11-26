@@ -4,7 +4,7 @@
       <v-container class="d-block d-sm-flex align-center">
       <div class="w-auto pa-5">
         <h1 class="mb-5">Set-up and test single sign-on in your web, mobile, and desktop apps</h1>
-        <p>With SSO Tools it is easy to spin-up your own custom identity providers, allowing you to start testing your <span class="bg-yellow-lighten-3 rounded-md pa-1">SAML2</span> applications in minutes.</p>
+        <p>With SSO Tools it is easy to spin-up your own custom identity providers, allowing you to start testing your <span class="bg-yellow-lighten-3 rounded-md pa-1">SAML2</span>, <span class="bg-yellow-lighten-3 rounded-md pa-1">OAuth2</span>, and <span class="bg-yellow-lighten-3 rounded-md pa-1">OpenID Connect</span> applications in minutes.</p>
         <v-btn class="mt-5" to="/idps/new" color="primary" prepend-icon="mdi-plus"> Create your own IdP</v-btn>
         <div class="d-flex align-center mt-2">
           <v-icon icon="mdi-star" class="mr-2 text-primary" />
@@ -65,30 +65,17 @@
 
     <div class="d-flex flex-column align-center bg-indigo-lighten-5 mt-16 pa-10 rounded-lg elevation-5">
       <div class="w-75">
-        <h1>Features &amp; roadmap</h1>
+        <h1>Features</h1>
         <p>SSO Tools is offered as a free service. For any questions, or to get in touch, please do so via <a href="mailto:hello@sso.tools" target="_blank" rel="noopener noreferrer">email</a>.</p>
       </div>
 
       <div class="d-block d-sm-flex mt-10">
         <div class="mr-2">
-          <h3>What you get now</h3>
-          <v-list>
+          <v-list bg='none'>
             <v-list-item v-for="feature in features" :key="feature">
               <v-list-item-icon><v-icon icon="mdi-check-circle" class="text-green mr-2"/></v-list-item-icon>
               <v-list-item-content>
                 {{ feature }}
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </div>
-
-        <div class="mt-5 mt-sm-0">
-          <h3>What's coming</h3>
-          <v-list>
-            <v-list-item v-for="item in roadmap" :key="item" avatar>
-              <v-list-item-icon><v-icon icon="mdi-clock-outline" class="text-grey-lighten-1 mr-2" /></v-list-item-icon>
-              <v-list-item-content>
-                {{ item }}
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -122,14 +109,7 @@ export default {
     return {
       landingImage, usersImage, secureImage, samlImage,
       features: [
-        'Create unlimited IdPs and apps', 'Support for custom user attributes & mappings', 'IdP- and SP-initiated SAML2 sign-on', 'SAML2 ForceAuthn respected', 'SP-initiated log-out', 'Request and response logging'
-      ],
-      roadmap: [
-        'OAuth2 and OpenID Connect support',
-        'Full SAML2 SLO process (i.e. log-out all signed-in SPs)',
-        'Improved certificate/signature handling',
-        'Support for automatic metadata registration',
-        'Support for metadata download',
+        'SAML2, OAuth2, and OpenID Connect support', 'Create unlimited IdPs and apps', 'Support for custom user attributes & mappings', 'IdP- and SP-initiated SAML2 sign-on', 'SAML2 ForceAuthn respected', 'Full request and response logging'
       ],
     }
   },

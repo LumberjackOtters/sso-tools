@@ -515,6 +515,14 @@ app.post('/:code/oauth2/token', async (req, res) => {
     if (oauthSession.scope.indexOf('profile') > -1) {
       claims.given_name = user.firstName;
       claims.family_name = user.lastName;
+      const customAttributes = await getAttributes(thisIdp);
+      customAttributes.forEach(a => {
+        const key = a.samlMapping || a.name;
+        if (key) {
+          const value = (user.attributes && user.attributes[a._id]) || a.defaultValue;
+          if (value) claims[key] = value;
+        }
+      });
     }
     returnData['id_token'] = jwt.sign(claims, JWT_SECRET);
   }
@@ -550,6 +558,40 @@ app.post('/:code/oauth2/token', async (req, res) => {
   res.json(returnData);
 });
 
+// Handle API request to get user's profile
+app.get('/:code/api/users/me', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return errorJson(res, 'This resource requires authorization', 403);
+
+  const thisIdp = await getIdp(req.params.code);
+  if (!thisIdp) return errorJson(res, `There is no IDP service available at this URL.`, 404);
+
+  const OauthSessions = await database.collection('oauthSessions');
+  const oauthSession = await OauthSessions.findOne({accessToken: authHeader, idp: thisIdp._id});
+  if (!oauthSession) return errorJson(res, `The acceess token provided is not valid.`, 403);
+  console.log(oauthSession);
+
+  const IdpUsers = await database.collection('idpUsers');
+  const user = await IdpUsers.findOne({_id: oauthSession.user});
+  if (!user) return errorJson(res, 'Could not find the user associated with this session', 404);
+
+  const returnData = {id: user._id};
+  if (oauthSession.scope.indexOf('email') > -1) returnData.email = user.email;
+  if (oauthSession.scope.indexOf('profile') > -1) {
+    returnData.firstName = user.firstName;
+    returnData.lastName = user.lastName;
+    const customAttributes = await getAttributes(thisIdp);
+    customAttributes.forEach(a => {
+      const key = a.samlMapping || a.name;
+      if (key) {
+        const value = (user.attributes && user.attributes[a._id]) || a.defaultValue;
+        if (value) returnData[key] = value;
+      }
+    });
+  }
+
+  res.json(returnData);
+});
 
 /*
     GENERAL LOGIN / LOGOUT HANDLERS
