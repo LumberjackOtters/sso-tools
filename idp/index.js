@@ -71,6 +71,10 @@ function errorPage(res, message, status) {
   res.status(status || 400).send(pageTemplate(`<h4>There was a problem fulfilling your request.</h3><h4>${message}</h4>`));
 }
 
+function errorJson(res, message, status) {
+  res.status(status || 400).json({ success: false, message: message });
+}
+
 async function getIdp(code) {
   const idpCode = code && code.toLowerCase();
   if (!idpCode) return null;
@@ -468,27 +472,27 @@ app.post('/:code/oauth2/token', async (req, res) => {
   const code = req.body.code;
   const redirectUri = req.body.redirect_uri;
   const grantType = req.body.grant_type;
-  if (!clientId) return errorPage(res, 'Client ID is required');
-  if (!clientSecret) return errorPage(res, 'Client secret is required');
-  if (!redirectUri) return errorPage(res, 'Redirect URI is required');
-  if (!code) return errorPage(res, 'Authorization code is required');
-  if (grantType !== 'authorization_code') return errorPage(res, 'Grant type must equal "authorization_code"');
+  if (!clientId) return errorJson(res, 'Client ID is required');
+  if (!clientSecret) return errorJson(res, 'Client secret is required');
+  if (!redirectUri) return errorJson(res, 'Redirect URI is required');
+  if (!code) return errorJson(res, 'Authorization code is required');
+  if (grantType !== 'authorization_code') return errorJson(res, 'Grant type must equal "authorization_code"');
 
   const thisIdp = await getIdp(req.params.code);
-  if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`, 404);
+  if (!thisIdp) return errorJson(res, `There is no IDP service available at this URL.`, 404);
 
   const OauthSessions = await database.collection('oauthSessions');
   const oauthSession = await OauthSessions.findOne({code: code, idp: thisIdp._id});
-  if (!oauthSession) return errorPage(res, `No valid OAuth2 session is available with these details.`, 404);
+  if (!oauthSession) return errorJson(res, `No valid OAuth2 session is available with these details.`, 404);
 
   const IdpSps = await database.collection('idpSps');
   const thisSp = await IdpSps.findOne({_id: oauthSession.sp, oauth2ClientId: clientId, oauth2ClientSecret: clientSecret});
-  if (!thisSp) return errorPage(res, `A service provider matching your information could not be found. Please check your client ID and secret`);
-  if (thisSp.oauth2RedirectUri !== redirectUri) return errorPage(res, `The Redirect URI specified doesn't match what is registered for this service provider`, 400);
+  if (!thisSp) return errorJson(res, `A service provider matching your information could not be found. Please check your client ID and secret`);
+  if (thisSp.oauth2RedirectUri !== redirectUri) return errorJson(res, `The Redirect URI specified doesn't match what is registered for this service provider`, 400);
 
   const IdpUsers = await database.collection('idpUsers');
   const user = await IdpUsers.findOne({_id: oauthSession.user});
-  if (!user) return errorPage(res, 'Could not find the user associated with this session', 404);
+  if (!user) return errorJson(res, 'Could not find the user associated with this session', 404);
 
   // Prepare ID Token (if in scope) and access token
   const returnData = {};
@@ -501,7 +505,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
     }
     returnData['id_token'] = jwt.sign(claims, JWT_SECRET);
   }
-  returnData['access_token'] = Math.random().toString(16).substr(2, 65);
+  returnData['access_token'] = Math.random().toString(32).substr(2, 14);
   console.log(returnData);
 
   const OauthRequests = await database.collection('oauthRequests');
@@ -523,13 +527,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
   });
   await OauthSessions.updateOne({_id: oauthSession._id}, {$set: {accessToken: returnData['access_token']}});
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(returnData)
-  };
+  res.json(returnData);
 });
 
 /*
