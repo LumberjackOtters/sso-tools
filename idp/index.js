@@ -363,7 +363,7 @@ app.post('/:code/saml/login', async (req, res) => {
 // Handle requests to SP-initiated login for OAuth2
 app.get('/:code/oauth2/authorize', async (req, res) => {
   const clientId = req.query.client_id;
-  const scope = req.query.scope && req.query.scope.split(',');
+  const scope = req.query.scope && req.query.scope.split(' ');
   const redirectUri = req.query.redirect_uri;
   const responseType = req.query.response_type;
   if (!clientId) return errorPage(res, 'No client ID was provided');
