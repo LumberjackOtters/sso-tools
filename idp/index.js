@@ -14,6 +14,7 @@ JWT_SECRET = process.env.JWT_SECRET;
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 const SCOPES = {
   'openid': 'SSO Tools will issue a token containing your basic account details to the service provider',
@@ -461,11 +462,12 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
 
 // Handle Oauth2 token request
 app.post('/:code/oauth2/token', async (req, res) => {
-  const clientId = req.query.client_id;
-  const clientSecret = req.query.client_secret;
-  const code = req.query.code;
-  const redirectUri = req.query.redirect_uri;
-  const grantType = req.query.grant_type;
+  console.log(req.body);
+  const clientId = req.body.client_id;
+  const clientSecret = req.body.client_secret;
+  const code = req.body.code;
+  const redirectUri = req.body.redirect_uri;
+  const grantType = req.body.grant_type;
   if (!clientId) return errorPage(res, 'Client ID is required');
   if (!clientSecret) return errorPage(res, 'Client secret is required');
   if (!redirectUri) return errorPage(res, 'Redirect URI is required');
@@ -480,7 +482,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
   if (!oauthSession) return errorPage(res, `No valid OAuth2 session is available with these details.`, 404);
 
   const IdpSps = await database.collection('idpSps');
-  const thisSp = await IdpSps.findOne({_id: oauthSession.sp, clientId: clientId, clientSecret: clientSecret});
+  const thisSp = await IdpSps.findOne({_id: oauthSession.sp, oauth2ClientId: clientId, oauth2ClientSecret: clientSecret});
   if (!thisSp) return errorPage(res, `A service provider matching your information could not be found. Please check your client ID and secret`);
   if (thisSp.oauth2RedirectUri !== redirectUri) return errorPage(res, `The Redirect URI specified doesn't match what is registered for this service provider`, 400);
 
@@ -491,7 +493,13 @@ app.post('/:code/oauth2/token', async (req, res) => {
   // Prepare ID Token (if in scope) and access token
   const returnData = {};
   if (oauthSession.scope.indexOf('openid') > -1) {
-    returnData['id_token'] = jwt.sign({ sub: user.email }, JWT_SECRET);
+    const claims = {sub: user._id};
+    if (oauthSession.scope.indexOf('email') > -1) claims.email = user.email;
+    if (oauthSession.scope.indexOf('profile') > -1) {
+      claims.given_name = user.firstName;
+      claims.family_name = user.lastName;
+    }
+    returnData['id_token'] = jwt.sign(claims, JWT_SECRET);
   }
   returnData['access_token'] = Math.random().toString(16).substr(2, 65);
   console.log(returnData);
@@ -503,7 +511,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
     sp: thisSp._id,
     type: 'tokenRequest',
     scope: oauthSession.scope,
-    code: oauthCode,
+    code: code,
   });
   await OauthRequests.insertOne({
     createdAt: new Date(),
