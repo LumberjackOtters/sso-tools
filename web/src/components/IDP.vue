@@ -50,6 +50,8 @@
               </v-list>
           </v-card>
 
+          <v-btn block class="mt-5" to="/guides/oauth2">OAuth2 Setup Guide</v-btn>
+
           <v-btn block class="mt-5" :href="`https://idp.sso.tools/${idp?.code}`" target="_blank" prepend-icon="mdi-open-in-new">Open IdP dashboard</v-btn>
         </div>
 

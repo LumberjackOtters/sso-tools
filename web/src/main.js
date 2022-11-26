@@ -25,6 +25,7 @@ import IDPSAMLLogs from './components/IdpSamlLogs.vue';
 import IDPOAuth from './components/IdpOauth.vue';
 import IDPOAuthGuide from './components/IdpOauthGuide.vue';
 import IDPOAuthLogs from './components/IdpOauthLogs.vue';
+import GuideLayout from './components/Guide.vue';
 
 import PrivacyPolicy from './components/legal/PrivacyPolicy.vue';
 import TermsOfUse from './components/legal/TermsOfUse.vue';
@@ -76,6 +77,9 @@ const router = createRouter({
     { path: '/account', component: Account },
     { path: '/password/reset', component: ResetPassword },
     { path: '/dashboard', component: Dashboard },
+    { path: '/guides', component: GuideLayout, children: [
+      { path: 'oauth2', component: IDPOAuthGuide },
+    ]},
     { path: '/idps/new', component: NewIDP },
     { path: '/idps/:id', component: IDP, children: [
       { path: '', component: IDPHome },
