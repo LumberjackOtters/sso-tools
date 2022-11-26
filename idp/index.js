@@ -2,6 +2,7 @@ const express = require('express')
 const { ObjectId } = require('mongodb'); // or ObjectID
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid/v4');
+const crypto = require('crypto');
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -439,7 +440,7 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
     return loginForm(res, 'oauth2/login', req.body.requestId, thisIdp, thisSp, 'You need to be logged-in to access this page.');
   }
 
-  const oauthCode = Math.random().toString(16).substr(2, 16);
+  const oauthCode = crypto.randomBytes(16).toString('hex');
   await OauthRequests.insertOne({
     createdAt: new Date(),
     idp: thisIdp._id,
@@ -466,7 +467,6 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
 
 // Handle Oauth2 token request
 app.post('/:code/oauth2/token', async (req, res) => {
-  console.log(req.body);
   const clientId = req.body.client_id;
   const clientSecret = req.body.client_secret;
   const code = req.body.code;
@@ -484,6 +484,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
   const OauthSessions = await database.collection('oauthSessions');
   const oauthSession = await OauthSessions.findOne({code: code, idp: thisIdp._id});
   if (!oauthSession) return errorJson(res, `No valid OAuth2 session is available with these details.`, 404);
+  if (oauthSession.consumed) return errorJson(res, 'This session code has already been redeemed. Please repeat the authorization process to obtain a new code.');
 
   const IdpSps = await database.collection('idpSps');
   const thisSp = await IdpSps.findOne({_id: oauthSession.sp, oauth2ClientId: clientId, oauth2ClientSecret: clientSecret});
@@ -505,8 +506,7 @@ app.post('/:code/oauth2/token', async (req, res) => {
     }
     returnData['id_token'] = jwt.sign(claims, JWT_SECRET);
   }
-  returnData['access_token'] = Math.random().toString(32).substr(2, 14);
-  console.log(returnData);
+  returnData['access_token'] = crypto.randomBytes(40).toString('hex');
 
   const OauthRequests = await database.collection('oauthRequests');
   await OauthRequests.insertOne({
@@ -525,10 +525,11 @@ app.post('/:code/oauth2/token', async (req, res) => {
     scope: oauthSession.scope,
     data: returnData,
   });
-  await OauthSessions.updateOne({_id: oauthSession._id}, {$set: {accessToken: returnData['access_token']}});
+  await OauthSessions.updateOne({_id: oauthSession._id}, {$set: {consumed: true, accessToken: returnData['access_token']}});
 
   res.json(returnData);
 });
+
 
 /*
     GENERAL LOGIN / LOGOUT HANDLERS
