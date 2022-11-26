@@ -387,6 +387,12 @@ app.get('/:code/oauth2/authorize', async (req, res) => {
     scope: scope,
     redirectUri: redirectUri,
     clientId: clientId,
+    data: {
+      clientId: clientId,
+      scope: scope,
+      redirectUri: redirectUri,
+      responseType: responseType,
+    }
   });
 
   const user = await getUser(req, thisIdp);
@@ -450,6 +456,7 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
     redirectUri: request.redirectUri,
     clientId: request.clientId,
     code: oauthCode,
+    data: request,
   });
 
   const OauthSessions = await database.collection('oauthSessions');
@@ -460,6 +467,11 @@ app.post('/:code/oauth2/confirm', async (req, res) => {
     user: user._id,
     scope: request.scope,
     code: oauthCode,
+    data: {
+      scope: request.scope,
+      clientId: request.clientId,
+      code: oauthCode,
+    }
   });
 
   res.redirect(`${request.redirectUri}?code=${oauthCode}`);
@@ -516,6 +528,14 @@ app.post('/:code/oauth2/token', async (req, res) => {
     type: 'tokenRequest',
     scope: oauthSession.scope,
     code: code,
+    data: {
+      scope: oauthSession.scope,
+      code: code,
+      clientId: clientId,
+      clientSecret: 'REDACTED',
+      redirectUri: redirectUri,
+      grantType: grantType,
+    }
   });
   await OauthRequests.insertOne({
     createdAt: new Date(),

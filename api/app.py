@@ -133,6 +133,10 @@ def idp_attribute_route(id, attr_id):
   if request.method == 'PUT':
     return util.jsonify(idps.update_attribute(util.get_user(required=False), id, attr_id, request.json))
 
-@app.route('/idps/<id>/logs', methods=['GET'])
-def idp_logs_route(id):
+@app.route('/idps/<id>/saml2/logs', methods=['GET'])
+def idp_saml_logs_route(id):
   return util.jsonify(idps.get_logs(util.get_user(required=False), id))
+
+@app.route('/idps/<id>/oauth2/logs', methods=['GET'])
+def idp_oauth_logs_route(id):
+  return util.jsonify(idps.get_oauth_logs(util.get_user(required=False), id))

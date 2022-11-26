@@ -320,12 +320,27 @@ def get_logs(user, id):
   db = database.get_db()
   idp = db.idps.find_one(id)
   if not idp: return errors.NotFound('IDP not found')
-  if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t update this IdP')
+  if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t access this IdP')
   logs = list(db.requests.find({'idp': id}).sort('createdAt', pymongo.DESCENDING).limit(30))
   sps = list(db.idpSps.find({'idp': id}, {'name': 1}))
   for log in logs:
     if log.get('data', {}).get('assertion', {}).get('key'):
       log['data']['assertion']['key'] = 'REDACTED'
+    for sp in sps:
+      if log['sp'] == sp['_id']:
+        log['spName'] = sp['name']
+        break
+  return {'logs': logs}
+
+def get_oauth_logs(user, id):
+  id = ObjectId(id)
+  db = database.get_db()
+  idp = db.idps.find_one(id)
+  if not idp: return errors.NotFound('IDP not found')
+  if not can_manage_idp(user, idp): raise errors.Forbidden('You can\'t access this IdP')
+  logs = list(db.oauthRequests.find({'idp': id}).sort('createdAt', pymongo.DESCENDING).limit(30))
+  sps = list(db.idpSps.find({'idp': id}, {'name': 1}))
+  for log in logs:
     for sp in sps:
       if log['sp'] == sp['_id']:
         log['spName'] = sp['name']

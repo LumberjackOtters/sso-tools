@@ -43,7 +43,7 @@ export default {
   methods: {
     fetchLogs() {
       this.loadingLogs = true;
-      api.req('GET', `/idps/${this.idp._id}/logs`, null, resp => {
+      api.req('GET', `/idps/${this.idp._id}/saml2/logs`, null, resp => {
         this.logs = resp.logs;
         this.logs.forEach(l => l.formattedData = JSON.stringify(l.data, null, 2));
         this.loadingLogs = false;
