@@ -5,7 +5,7 @@ const database = {
   connect: async () => {
     const url = process.env.MONGO_URL;
     const dbName = process.env.MONGO_DATABASE;
-    const client = new MongoClient(url, { useNewUrlParser: true });
+    const client = new MongoClient(url);
     await client.connect();
     database.db = client.db(dbName);
     return database.db;

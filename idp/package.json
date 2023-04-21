@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {},
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^3.2.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -11,7 +11,7 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.1.10",
+    "mongodb": "^5.3.0",
     "pem": "^1.13.2",
     "saml2-js": "^2.0.3",
     "underscore": "^1.9.1",
