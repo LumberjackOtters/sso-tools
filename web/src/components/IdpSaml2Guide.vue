@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>A guide to implementing SAML2 single sign-on</h1>
-    <p>Setting-up SAML2 for the first time might seem daunting, but once you understand the flow you'll be easily able to implement single sign-on for your apps in no time.</p>
+    <p>Setting-up SAML2 for the first time might seem a daunting task, but once you understand the flow you'll be easily able to implement single sign-on for your apps in no time.</p>
 
     <v-alert class="mt-8 mb-5">
       <h3>TL;DR?</h3>
