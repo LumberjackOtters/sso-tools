@@ -29,6 +29,10 @@
               <v-list-item :to="`/idps/${idp._id}/saml`" prepend-icon="mdi-swap-horizontal">
                 <v-list-item-content>SAML2 configuration</v-list-item-content>
               </v-list-item>
+              
+              <v-list-item :to="`/idps/${idp._id}/saml/guide`" prepend-icon="mdi-lifebuoy">
+                <v-list-item-content>SAML2 setup guide</v-list-item-content>
+              </v-list-item>
 
               <v-list-item :to="`/idps/${idp._id}/saml/logs`" prepend-icon="mdi-format-list-bulleted">
                 <v-list-item-content>SAML2 logs</v-list-item-content>

@@ -38,7 +38,7 @@
         <div class="mt-5">
           <h4 class="mb-3">Learn how to implement:</h4>
           <v-btn class="mr-2 mb-2" size='small' to="/guides/oauth2" color="green">OAuth2 & OpenID Connect</v-btn>
-          <v-btn class="mr-2 mb-2" size='small' color="green" disabled>SAML2 (coming soon...)</v-btn>
+          <v-btn class="mr-2 mb-2" size='small' to="/guides/saml2" color="green">SAML2</v-btn>
         </div>
 
       </div>

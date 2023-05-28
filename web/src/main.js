@@ -24,6 +24,7 @@ import IDPSAML from './components/IdpSaml.vue';
 import IDPSAMLLogs from './components/IdpSamlLogs.vue';
 import IDPOAuth from './components/IdpOauth.vue';
 import IDPOAuthGuide from './components/IdpOauthGuide.vue';
+import IDPSaml2Guide from './components/IdpSaml2Guide.vue';
 import IDPOAuthLogs from './components/IdpOauthLogs.vue';
 import GuideLayout from './components/Guide.vue';
 
@@ -79,6 +80,7 @@ const router = createRouter({
     { path: '/dashboard', component: Dashboard },
     { path: '/guides', component: GuideLayout, children: [
       { path: 'oauth2', component: IDPOAuthGuide },
+      { path: 'saml2', component: IDPSaml2Guide },
     ]},
     { path: '/idps/new', component: NewIDP },
     { path: '/idps/:id', component: IDP, children: [
@@ -87,6 +89,7 @@ const router = createRouter({
       { path: 'settings', component: IDPSettings },
       { path: 'sps', component: IDPSPs },
       { path: 'saml', component: IDPSAML },
+      { path: 'saml/guide', component: IDPSaml2Guide },
       { path: 'saml/logs', component: IDPSAMLLogs },
       { path: 'oauth', component: IDPOAuth },
       { path: 'oauth/guide', component: IDPOAuthGuide },
