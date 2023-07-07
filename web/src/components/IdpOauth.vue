@@ -8,7 +8,7 @@
     <div class=" mt-5 pa-5 bg-grey-lighten-3 rounded-lg">
       <h4>Authorization URL</h4>
       <p>This is where your app should redirect users in order to begin the single sign-on flow.</p>
-      <v-text-field class="mt-3 mb-1" readonly label="Authorization URL" :model-value="`https://idp.sso.tools/${idp.code}/oauth2/authorize`" />
+      <v-text-field class="mt-3 mb-1" readonly label="Authorization URL" :model-value="`${idpUrl}/${idp.code}/oauth2/authorize`" />
       <p>This URL should be accessed via HTTP <code>GET</code> and it expects the following parameters:</p>
       <ul class="ml-5 mt-2">
         <li><code>client_id</code>: The client ID for the app (available on the Connected apps page).</li>
@@ -39,7 +39,7 @@
     <div class=" mt-5 pa-5 bg-grey-lighten-3 rounded-lg">
       <h4 >Token URL</h4>
       <p>This is the URL used to obtain an ID token and access token using the <code>code</code> returned from the IdP after authentication.</p>
-      <v-text-field class="mt-3 mb-1" readonly label="Token URL" :model-value="`https://idp.sso.tools/${idp.code}/oauth2/token`" />
+      <v-text-field class="mt-3 mb-1" readonly label="Token URL" :model-value="`${idpUrl}/${idp.code}/oauth2/token`" />
       <p>This URL should be accessed via HTTP <code>POST</code> with a body in JSON format containing the following fields:</p>
       <ul class="ml-5 mt-2">
         <li><code>code</code>: The code received back after authentication.</li>
@@ -54,7 +54,7 @@
     <div class=" mt-5 pa-5 bg-grey-lighten-3 rounded-lg">
       <h4>API endpoint URL</h4>
       <p>This URL represents an example API endpoint that can be called to check the validity of the <code>access_token</code>.</p>
-      <v-text-field class="mt-3 mb-1" readonly label="Example API URL" :model-value="`https://idp.sso.tools/${idp.code}/api/users/me`" />
+      <v-text-field class="mt-3 mb-1" readonly label="Example API URL" :model-value="`${idpUrl}/${idp.code}/api/users/me`" />
       <p>To call this, make an HTTP <code>GET</code> request to the URL with the <code>access_token</code> stored in the request's <code>Authorization</code> header.</p>
     </div>
 
@@ -69,6 +69,20 @@ export default {
   props: ['idp'],
   data() {
     return {
+    }
+  },
+  computed: {
+    idpUrl() {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
     }
   },
   methods: {

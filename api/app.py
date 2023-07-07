@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 import werkzeug
 from chalicelib.util import util
-from chalicelib.api import accounts, users, idps
+from chalicelib.api import accounts, users, idps, sps
 
 app = Flask(__name__)
 CORS(app)
@@ -140,3 +140,19 @@ def idp_saml_logs_route(id):
 @app.route('/idps/<id>/oauth2/logs', methods=['GET'])
 def idp_oauth_logs_route(id):
   return util.jsonify(idps.get_oauth_logs(util.get_user(required=False), id))
+
+
+# SPs
+
+@app.route('/sps', methods=['GET'])
+def sps_route():
+  if request.method == 'GET':
+    params = request.args or {}
+    return util.jsonify(sps.get(None, params.get('include')))
+
+@app.route('/sps/<tenant>/<product>', methods=['GET', 'DELETE'])
+def sp_route(tenant, product):
+  if request.method == 'GET':
+    return util.jsonify(sps.get_one(None, tenant, product))
+  if request.method == 'DELETE':
+    return util.jsonify(sps.delete(None, tenant, product))

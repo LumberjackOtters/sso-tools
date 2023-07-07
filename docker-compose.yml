@@ -1,0 +1,92 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+
+  web:
+    image: ssotools/web
+    restart: always
+    build: 
+      context: ./web
+      args: 
+        VITE_IDP_PROTOCOL: http
+        VITE_IDP_HOST: localhost
+        VITE_IDP_PORT: 6001
+        VITE_SP_PROTOCOL: http
+        VITE_SP_HOST: localhost
+        VITE_SP_PORT: 3000
+        VITE_API_PROTOCOL: http
+        VITE_API_HOST: localhost
+        VITE_API_PORT: 6002
+    ports:
+      - 80:80
+    # environment:
+    #   VITE_IDP_PROTOCOL: http
+    #   VITE_IDP_HOST: localhost
+    #   VITE_IDP_PORT: 6001
+    #   VITE_SP_PROTOCOL: http
+    #   VITE_SP_HOST: localhost
+    #   VITE_SP_PORT: 3000
+    #   VITE_API_PROTOCOL: http
+    #   VITE_API_HOST: localhost
+    #   VITE_API_PORT: 6002
+
+  sp:
+    image: ssotools/sp
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/
+      MONGO_DATABASE: test
+      JWT_SECRET: SECURESTRING
+      APP_HOST: localhost
+      APP_PORT: 3000
+
+  idp:
+    image: ssotools/idp
+    restart: always
+    ports:
+      - 6001:6001
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/
+      MONGO_DATABASE: ssotools
+      JWT_SECRET: SECURESTRING
+      APP_HOST: localhost
+      APP_PORT: 6001
+
+  api:
+    image: ssotools/api
+    restart: always
+    command: "flask run --host=0.0.0.0"
+    ports:
+      - 6002:6002
+      - 8000:8000
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      FLASK_RUN_PORT: 6002
+      MONGO_URL: mongodb://root:example@mongo:27017/
+      MONGO_DATABASE: ssotools
+      JWT_SECRET: devsecret
+
+  mongo:
+    image: mongo
+    # debug purpose
+    # command: "mongod --profile=1 --slowms=1 &"
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/

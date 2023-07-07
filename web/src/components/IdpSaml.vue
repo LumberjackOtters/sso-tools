@@ -6,8 +6,8 @@
     <v-alert color="green" class="mt-5">For help in getting started with implementing SAML2, check out the <router-link style="color:white;" :to="`/idps/${idp._id}/saml/guide`">SAML2 guide</router-link>.</v-alert>
 
     <div style="margin-top:20px;" />
-    <v-text-field readonly label="Sign-on URL (single login service through the HTTP redirect binding)" :model-value="`https://idp.sso.tools/${idp.code}/saml/login/request`" />
-    <v-text-field readonly label="Logout URL (single logout service through the HTTP redirect binding)" :model-value="`https://idp.sso.tools/${idp.code}/saml/logout/request`" />
+    <v-text-field readonly label="Sign-on URL (single login service through the HTTP redirect binding)" :model-value="`${ idpUrl }/${idp.code}/saml/login/request`" />
+    <v-text-field readonly label="Logout URL (single logout service through the HTTP redirect binding)" :model-value="`${ idpUrl }/${idp.code}/saml/logout/request`" />
     <v-textarea :model-value="idp.saml.certificate" label="Signing certificate" readonly rows="6" style="font-size:11px;"/>
     <v-alert type="info" class="mt-5">
       <h4>Self-signed certificates</h4>
@@ -24,6 +24,20 @@ export default {
   props: ['idp'],
   data() {
     return {
+    }
+  },
+  computed: {
+    idpUrl() {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
     }
   },
   methods: {

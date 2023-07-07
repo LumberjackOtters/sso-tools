@@ -6,7 +6,7 @@
       <v-card-text>
         <h5>IDP host</h5>
         <p>The URL of your IDP on the Internet. This forms the basis of your <router-link :to="`/idps/${idp._id}/saml`">SSO configuration</router-link>.</p>
-        <v-text-field :model-value="`https://idp.sso.tools/${idp.code}`" label="IDP host" variant="solo" readonly/>
+        <v-text-field :model-value="`${idpUrl}/${idp.code}`" label="IDP host" variant="solo" readonly/>
 
         <h5>SAML2 configuration</h5>
         <v-btn :to='`/idps/${idp._id}/saml`'>See SAML2 configuration</v-btn>
@@ -47,6 +47,20 @@ export default {
     return {
       deleting: false,
       deletingProgress: false,
+    }
+  },
+  computed: {
+    idpUrl() {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
     }
   },
   methods: {

@@ -1,18 +1,18 @@
 <template>
   <div>
     <v-container>
-      <h3>Manage Identity Provider</h3>
-      <h1 class="mb-10">{{idp && idp.name}}</h1>
+      <h3>Manage Service Provider</h3>
+      <h1 class="mb-10">{{ sp && sp.tenant }} {{ sp && sp.product }}</h1>
 
       <div class="d-block d-sm-flex">
         <div class="mb-10">
-          <v-card v-if="idp">
+          <v-card v-if="sp">
             <v-list>
-              <v-list-item exact :to="`/idps/${idp._id}`" prepend-icon="mdi-home">
+              <v-list-item exact prepend-icon="mdi-home">
                 <v-list-item-content>Overview</v-list-item-content>
               </v-list-item>
 
-              <v-list-item :to="`/idps/${idp._id}/settings`" prepend-icon="mdi-cogs">
+              <!-- <v-list-item :to="`/idps/${idp._id}/settings`" prepend-icon="mdi-cogs">
                 <v-list-item-content>Settings</v-list-item-content>
               </v-list-item>
 
@@ -50,16 +50,16 @@
 
               <v-list-item :to="`/idps/${idp._id}/oauth/logs`" prepend-icon="mdi-format-list-bulleted">
                 <v-list-item-content>OAuth2 logs</v-list-item-content>
-              </v-list-item>
+              </v-list-item> -->
               </v-list>
           </v-card>
 
-          <v-btn block class="mt-5" :href="`${ idpUrl }/${idp?.code}`" target="_blank" prepend-icon="mdi-open-in-new">Open IdP dashboard</v-btn>
+          <v-btn block class="mt-5" :href="`${spUrl}/${this.$route.params.tenant}/${this.$route.params.product}/sso/authorize`" target="_blank" prepend-icon="mdi-open-in-new">Start SP Login</v-btn>
         </div>
 
         <div class="ml-sm-5" style="flex: 1">
-          <div v-if="idp">
-            <router-view :idp="idp" @onUpdateIdp="updateIdp"/>
+          <div v-if="sp">
+            <router-view :sp="sp" @onUpdateIdp="updateIdp"/>
           </div>
         </div>
       </div>
@@ -72,35 +72,36 @@
 import api from '../api';
 
 export default {
-  name: 'IDP',
+  name: 'SP',
   data() {
     return {
-      idp: null
+      sp: null
+    }
+  },
+  computed: {
+    spUrl() {
+      let spUrl = '';
+      spUrl += import.meta.env.VITE_SP_PROTOCOL;
+      spUrl += '://';
+      spUrl += import.meta.env.VITE_SP_HOST;
+      if (import.meta.env.VITE_SP_PORT != null && import.meta.env.VITE_SP_PORT != '') {
+        spUrl += ':';
+        spUrl += import.meta.env.VITE_SP_PORT;
+      }
+
+      return spUrl
     }
   },
   created (){
-    const id = this.$route.params.id;
-    api.req('GET', `/idps/${id}`, null, resp => {
-      this.idp = resp;
+    const tenant = this.$route.params.tenant;
+    const product = this.$route.params.product;
+    api.req('GET', `/sps/${tenant}/${product}`, null, resp => {
+      this.sp = resp;
     });
-  },
-  computed: {
-    idpUrl() {
-      let idpUrl = '';
-      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
-      idpUrl += '://';
-      idpUrl += import.meta.env.VITE_IDP_HOST;
-      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
-        idpUrl += ':';
-        idpUrl += import.meta.env.VITE_IDP_PORT;
-      }
-
-      return idpUrl
-    }
   },
   methods: {
     updateIdp(upd) {
-      this.idp = upd;
+      this.sp = upd;
     },
   },
 }

@@ -4,16 +4,80 @@
       <h1>Welcome back<span v-if="user">, {{user.firstName}}</span></h1>
 
       <div class="d-block d-sm-flex mt-10">
+
+        <div class="flex-grow-1 idps bg-pink-lighten-5 ma-2 pa-2">
+          <div style="text-align:center;margin-top:50px;" v-if="loading">
+            <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
+          </div>
+
+          <div v-if="!idps.length && !loading" class="text-center">
+            <h3 class="mb-5">You don't yet have any IdPs</h3>
+            <v-btn to='/idps/new'>Create your first IdP</v-btn>
+            <img :src="emptyImage" style="width:100%;max-width:400px;display:block;margin:20px auto;" />
+          </div>
+
+          <div v-if="idps.length">
+            <div class="d-flex justify-space-between">
+              <h2>Your IDPs</h2>
+              <v-btn to='/idps/new' v-if="idps.length">Create a new IDP</v-btn>
+            </div>
+            <div class="mt-10 d-flex flex-wrap">
+              <div class="w-50 pa-2" v-for="idp in idps" :key="idp._id">
+                <v-card :to="`/idps/${idp._id}`">
+                  <v-card-title primary-title>
+                    <h3 class="headline mb-0">{{idp.name}}</h3>
+                  </v-card-title>
+                  <v-card-text>{{ idpUrl }}/{{idp.code}}</v-card-text>
+                  <v-card-actions>
+                    <v-btn :to="`/idps/${idp._id}`" flat prepend-icon="mdi-cog">Manage</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-block d-sm-flex mt-10">
+        <div class="flex-grow-1 sps bg-cyan-lighten-5 ma-2 pa-2">
+              <div style="text-align:center;margin-top:50px;" v-if="loading">
+                <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
+              </div>
+
+              <div v-if="!sps.length && !loading" class="text-center">
+                <h3 class="mb-5">You don't yet have any SPs</h3>
+                <v-btn to='/sps/new' color="primary">Create your first SP</v-btn>
+                <img :src="emptyImage" style="width:100%;max-width:400px;display:block;margin:20px auto;" />
+              </div>
+
+              <div v-if="sps.length">
+                <div class="d-flex justify-space-between">
+                  <h2>Your SPs</h2>
+                  <v-btn to='/sps/new' v-if="sps.length">Create a new SP</v-btn>
+                </div>
+                <div class="mt-10 d-flex flex-wrap">
+                  <div class="w-50 pa-2" v-for="sp in sps" :key="sp._id">
+                    <v-card :to="`/sps/${sp.tenant}/${sp.product}`">
+                      <v-card-title primary-title>
+                        <h3 class="headline mb-0">{{ sp.tenant }} {{ sp.product }}</h3>
+                      </v-card-title>
+                      <!-- <v-card-text>{{ idpUrl }}/{{ sp.code }}</v-card-text> -->
+                      <v-card-actions>
+                        <v-btn :to="`/sps/${sp.tenant}/${sp.product}`" flat prepend-icon="mdi-cog">Manage</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </div>
+
+      <div class="d-block d-sm-flex mt-10">
         <div class="mr-sm-4 mb-4" style="max-width: 350px">
           <v-alert icon="mdi-party-popper" v-if="!loggedIn" class="mb-5">
             <h3>Want to help out?</h3>
             <p>SSO Tools is provided for free but costs money to maintain, build, and run. If you find it useful then you may like to consider supporting it!</p>
             <v-btn block class="mt-3 umami--click--support-button-dashboard" prepend-icon="mdi-coffee" href="https://ko-fi.com/wilw88" target="_blank" rel="noopener noreferrer">Buy me a coffee</v-btn>
-          </v-alert>
-
-          <v-alert v-if="loggedIn" color="primary" icon="mdi-flash">
-            <h3>Thanks for being a member!</h3>
-            <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
           </v-alert>
 
           <v-alert v-if="!loggedIn" color="orange-darken-3" >
@@ -25,38 +89,11 @@
               <v-btn v-on:click="login">Login</v-btn>
             </div>
           </v-alert>
-        </div>
 
-        <div class="flex-grow-1">
-          <div style="text-align:center;margin-top:50px;" v-if="loading">
-            <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
-          </div>
-
-          <div v-if="!idps.length && !loading" class="text-center">
-            <h3 class="mb-5">You don't yet have any IdPs</h3>
-            <v-btn to='/idps/new' color="primary">Create your first IdP</v-btn>
-            <img :src="emptyImage" style="width:100%;max-width:400px;display:block;margin:20px auto;" />
-          </div>
-
-          <div v-if="idps.length">
-            <div class="d-flex justify-space-between">
-              <h2>Your IDPs</h2>
-              <v-btn to='/idps/new' color="primary" v-if="idps.length">Create a new IDP</v-btn>
-            </div>
-            <div class="mt-10 d-flex flex-wrap">
-              <div class="w-50 pa-2" v-for="idp in idps" :key="idp._id">
-                <v-card :to="`/idps/${idp._id}`">
-                  <v-card-title primary-title>
-                    <h3 class="headline mb-0">{{idp.name}}</h3>
-                  </v-card-title>
-                  <v-card-text>https://idp.sso.tools/{{idp.code}}</v-card-text>
-                  <v-card-actions>
-                    <v-btn :to="`/idps/${idp._id}`" flat color="primary" prepend-icon="mdi-cog">Manage</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </div>
-            </div>
-          </div>
+          <v-alert v-if="loggedIn" color="primary" icon="mdi-flash">
+            <h3>Thanks for being a member!</h3>
+            <p>If you need any support with SSO Tools, or with connecting applications using SAML2, please get in touch with us.</p>
+          </v-alert>
         </div>
       </div>
 
@@ -72,7 +109,7 @@ export default {
   name: 'Dashboard',
   data() {
     return {
-      idps: [], emptyImage, loading: false
+      idps: [], sps: [], emptyImage, loading: false,
     }
   },
   computed: {
@@ -82,11 +119,26 @@ export default {
         api.req('GET', `/idps`, null, resp => {
           this.idps = resp.idps;
         });
+        api.req('GET', `/sps`, null, resp => {
+          this.sps = resp.sps;
+        });
       return user;
     },
     loggedIn () {
       return this.$store.state.loggedIn;
     },
+    idpUrl () {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
+    }
   },
   created (){
     let unsavedIdps = [];
@@ -111,4 +163,24 @@ export default {
 
 <style scoped>
 
+.idps .v-btn {
+  background-color: #DD58D6;
+  color: #6200EE;
+}
+.sps .v-btn {
+  background-color: #45CFDD;
+  color: #6200EE;
+}
+
+.sps, .idps {
+  border-radius: 4px;
+}
 </style>
+<!-- #6527BE
+#9681EB
+#45CFDD
+#A7EDE7 -->
+<!-- #40128B
+#9336B4
+#DD58D6
+#FFE79B -->

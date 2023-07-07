@@ -14,7 +14,7 @@
 
             <h3>Issuer name</h3>
             <p>This is a unique machine-friendly name (letters and numbers only) for your IdP. We'll use this to host your IdP on the internet, and it can always be changed later.</p>
-            <v-text-field v-model="code" label="Issuer" required placeholder="myidp" prefix="https://idp.sso.tools/" ></v-text-field>
+            <v-text-field v-model="code" label="Issuer" required placeholder="myidp" :prefix="`${ idpUrl }/`" ></v-text-field>
 
             <v-alert type="info" :value="true" v-if="!loggedIn">
               <h3>Not logged-in</h3>
@@ -101,8 +101,21 @@ export default {
     }
   },
   computed: {
-    loggedIn() { return this.$store.state.loggedIn; }
+    loggedIn() { return this.$store.state.loggedIn; },
+    idpUrl() {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
+    }
   },
+  
   methods: {
     skip () {
       this.page = this.page + 1;

@@ -20,6 +20,9 @@ var samlp = `<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" 
   </saml:AuthnStatement>
 </saml:Assertion>`;
 
+APP_HOST = process.env.APP_HOST;
+APP_PORT = process.env.APP_PORT;
+
 function pemToCert(pem) {
   var cert = /-----BEGIN CERTIFICATE-----([^-]*)-----END CERTIFICATE-----/g.exec(pem.toString());
   if (cert.length > 0) {
@@ -48,7 +51,7 @@ var algorithms = {
 };
 
 exports.parseRequest = function(options, request, callback) {
-  options.issuer = options.issuer || 'https://idp.sso.tools';
+  options.issuer = options.issuer || `https://${APP_HOST}:${APP_PORT}`;
   request = decodeURIComponent(request);
   var buffer = new Buffer(request, 'base64');
   const result = zlib.inflateRawSync(buffer)//, function(err, result) {

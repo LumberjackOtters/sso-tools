@@ -156,6 +156,9 @@ import logo from './assets/logo.png';
 import logoLight from './assets/logo_light.png';
 import api from './api';
 
+const protocol = import.meta.env.VITE_APP_PROTOCOL;
+// const privateEnvVar = import.meta.env.SERVER_SIDE_ONLY_VAR;
+
 export default {
   name: 'app',
   data() {

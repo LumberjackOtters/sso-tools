@@ -35,13 +35,13 @@
     <p class="mt-4">When creating your app, you'll need to provide an Entity ID (to match the ID of the SAML2 app) and an ACS/consumer URL (the URL that the user will be redirected to after successful authentication). If you don't know this right away, you can always change it later.</p>
 
     <h4 class="mt-5">Step 2: Redirect the user to the IdP to authenticate</h4>
-    <p>In your app, create a button or link that redirects the user to the IdP's "sign-on URL". In SSO Tools, these take the form of "https://idp.sso.tools/ISSUER/saml/login/request", replacing "ISSUER" with the issuer code for your IdP (e.g. "myidp").</p>
+    <p>In your app, create a button or link that redirects the user to the IdP's "sign-on URL". In SSO Tools, these take the form of "${ idpUrl }/ISSUER/saml/login/request", replacing "ISSUER" with the issuer code for your IdP (e.g. "myidp").</p>
     <p class="mt-4">Along with this request, you'll have to include some additional query parameters:</p>
     <ul class="mt-4">
       <li>`SAMLRequest`: The base64-encoded XML of the login request. See <a href="https://en.wikipedia.org/wiki/SAML_2.0#Authentication_Request_Protocol" target="_blank">this Wikipedia article</a> for more information.</li>
     </ul>
     <p class="mt-4">As such, an example request to redirect the user to on SSO Tools could look like the following:</p>
-    <p class="mt-4">https://idp.sso.tools/myidp/saml/login/request?SAMLRequest=fZFfa8IwFMXfBb9DyXvaJtZ1...</p>
+    <p class="mt-4">${ idpUrl }/myidp/saml/login/request?SAMLRequest=fZFfa8IwFMXfBb9DyXvaJtZ1...</p>
 
     <h4 class="mt-5">Step 3: The user authenticates</h4>
     <p>Your app can relax for a bit now, since the IdP now takes over in handling the user's authentication.</p>
@@ -61,6 +61,20 @@ export default {
   data() {
     return {
       idp: this.idp,
+    }
+  },
+  computed: {
+    idpUrl() {
+      let idpUrl = '';
+      idpUrl += import.meta.env.VITE_IDP_PROTOCOL;
+      idpUrl += '://';
+      idpUrl += import.meta.env.VITE_IDP_HOST;
+      if (import.meta.env.VITE_IDP_PORT != null && import.meta.env.VITE_IDP_PORT != '') {
+        idpUrl += ':';
+        idpUrl += import.meta.env.VITE_IDP_PORT;
+      }
+
+      return idpUrl
     }
   },
   methods: {

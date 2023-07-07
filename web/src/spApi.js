@@ -1,22 +1,22 @@
 function apiUrl() {
-    let apiUrl = '';
-    apiUrl += import.meta.env.VITE_API_PROTOCOL;
-    apiUrl += '://';
-    apiUrl += import.meta.env.VITE_API_HOST;
-    if (import.meta.env.VITE_API_PORT != null && import.meta.env.VITE_API_PORT != '') {
-      apiUrl += ':';
-      apiUrl += import.meta.env.VITE_API_PORT;
-    }
+    // let apiUrl = '';
+    // apiUrl += import.meta.env.VITE_API_PROTOCOL;
+    // apiUrl += '://';
+    // apiUrl += import.meta.env.VITE_API_HOST;
+    // if (import.meta.env.VITE_API_PORT != null && import.meta.env.VITE_API_PORT != '') {
+    //   apiUrl += ':';
+    //   apiUrl += import.meta.env.VITE_API_PORT;
+    // }
 
-    return apiUrl
+    return 'http://localhost:3000'
   }
 
 const hosts = {
-  'development': apiUrl() || 'http://localhost:6002',
+  'development': apiUrl() || 'http://localhost:3000',
   'production': apiUrl(),
 };
 
-export const api = {
+export const spApi = {
 
   token: null,
 
@@ -24,9 +24,9 @@ export const api = {
     const xhr = new XMLHttpRequest();
     xhr.open(method, `${hosts[process.env.NODE_ENV]}${path}`);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    if (api.token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${api.token}`);
-    }
+    // if (api.token) {
+    //   xhr.setRequestHeader('Authorization', `Bearer ${api.token}`);
+    // }
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
@@ -55,4 +55,4 @@ export const api = {
   },
 };
 
-export default api;
+export default spApi;

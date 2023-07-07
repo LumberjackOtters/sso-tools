@@ -10,6 +10,19 @@ const jwt = require('jsonwebtoken');
 const database = require('./database.js');
 const idp = require('./idp.js');
 
+function apiUrl() {
+    let apiUrl = '';
+    apiUrl += process.env.API_PROTOCOL || "http";
+    apiUrl += '://';
+    apiUrl += process.env.API_HOST || "localhost";
+    if (process.env.API_PORT != null && process.env.API_PORT != '') {
+      apiUrl += ':';
+      apiUrl += process.env.API_PORT;
+    }
+
+    return apiUrl
+}
+
 JWT_SECRET = process.env.JWT_SECRET;
 
 const app = express();
@@ -119,7 +132,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
   const rawAssertion = {
     key: thisIdp.saml.privateKey,
     cert: thisIdp.saml.certificate,
-    issuer: `https://idp.sso.tools/${thisIdp.code}`,
+    issuer: `${ apiUrl() }/${thisIdp.code}`,
     recipient: thisSp.recipient || thisSp.callbackUrl,
     audiences: thisSp.entityId,
     inResponseTo: requestId,
@@ -133,7 +146,7 @@ async function sendAssertion(res, user, requestId, thisIdp, thisSp, sessionId) {
   };
   const rawResponse = {
     instant: new Date().toISOString().trim(),
-    issuer: `https://idp.sso.tools/${thisIdp.code}`,
+    issuer: `${ apiUrl() }/${thisIdp.code}`,
     inResponseTo: requestId,
     destination: thisSp.callbackUrl,
     assertion: rawAssertion,
@@ -191,7 +204,7 @@ app.get('/:code', async (req, res) => {
             ${sps.map(s =>
               `<tr>
               <td>${s.name}</td>
-              <td style="text-align:right;"><a class='btn blue' href="${s.serviceUrl}">Visit Service</a><a class='btn green' href="https://idp.sso.tools/${thisIdp.code}/saml/login/initiate?entityId=${s.entityId}" style="margin-left: 10px;">IDP-initiated login</a></td></tr>`
+              <td style="text-align:right;"><a class='btn blue' href="${s.serviceUrl}">Visit Service</a><a class='btn green' href="${ apiUrl() }/${thisIdp.code}/saml/login/initiate?entityId=${s.entityId}" style="margin-left: 10px;">IDP-initiated login</a></td></tr>`
             )}
           </tbody>
         </table>
@@ -267,7 +280,7 @@ app.get('/:code/saml/logout/request', async (req, res) => {
     const relayState = req.query.RelayState;
     const thisIdp = await getIdp(req.params.code);
     if (!thisIdp) return errorPage(res, `There is no IDP service available at this URL.`);
-    const info = idp.parseRequest({ issuer: `https://idp.sso.tools/${thisIdp.code}` }, request);
+    const info = idp.parseRequest({ issuer: `${ apiUrl() }/${thisIdp.code}` }, request);
 
     if (info.login) {
       return errorPage(res, 'This endpoint cannot be used to handle login requests. Please use /login/request instead.');

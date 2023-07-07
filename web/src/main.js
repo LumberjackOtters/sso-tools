@@ -27,6 +27,9 @@ import IDPOAuthGuide from './components/IdpOauthGuide.vue';
 import IDPSaml2Guide from './components/IdpSaml2Guide.vue';
 import IDPOAuthLogs from './components/IdpOauthLogs.vue';
 import GuideLayout from './components/Guide.vue';
+import NewSP from './components/NewSP.vue'
+import SP from './components/SP.vue'
+import SPHome from './components/SpHome.vue'
 
 import PrivacyPolicy from './components/legal/PrivacyPolicy.vue';
 import TermsOfUse from './components/legal/TermsOfUse.vue';
@@ -83,6 +86,10 @@ const router = createRouter({
       { path: 'saml2', component: IDPSaml2Guide },
     ]},
     { path: '/idps/new', component: NewIDP },
+    { path: '/sps/new', component: NewSP },
+    { path: '/sps/:tenant/:product', component: SP, children: [
+      { path: '', component: SPHome }
+    ] },
     { path: '/idps/:id', component: IDP, children: [
       { path: '', component: IDPHome },
       { path: 'users', component: IDPUsers },
