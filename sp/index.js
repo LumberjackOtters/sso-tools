@@ -60,12 +60,12 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-async function getSp(code) {
-  const spCode = code && code.toLowerCase();
-  if (!spCode) return null;
-  const Sps = await database.collection('sps');
-  return await Sps.findOne({code: spCode});
-}
+// async function getSp(code) {
+//   const spCode = code && code.toLowerCase();
+//   if (!spCode) return null;
+//   const Sps = await database.collection('sps');
+//   return await Sps.findOne({code: spCode});
+// }
 
 // async function getUser(req, currentIdp) {
 //   const cookie = req.cookies;
@@ -84,11 +84,24 @@ async function getSp(code) {
 //   return customAttributes;
 // }
 
+function spUrl() {
+    let spUrl = '';
+    spUrl += import.meta.env.SP_PROTOCOL;
+    spUrl += '://';
+    spUrl += import.meta.env.SP_HOST;
+    if (import.meta.env.SP_PORT != null && import.meta.env.SP_PORT != '') {
+      spUrl += ':';
+      spUrl += import.meta.env.SP_PORT;
+    }
+
+    return spUrl
+}
+
 let apiController;
 let oauthController;
 
 const jacksonOptions = {
-  externalUrl: 'http://localhost:3000',
+  externalUrl: spUrl(),
   samlAudience: process.env.MONGO_DATABASE,
   samlPath: '/sso/acs',
   db: {
@@ -135,8 +148,8 @@ app.post('/api/config', express.json(), async (req, res, next) => {
 
 //   res.json({ tenant: tenant });
 
-  const defaultRedirectUrl = 'http://localhost:3000/'+ tenant +'/'+ product +'/sso/callback';
-  const redirectUrl = '["http://localhost:3000/*"]';
+  const defaultRedirectUrl = spUrl() + '/' + tenant +'/'+ product +'/sso/callback';
+  const redirectUrl = '["'+ spUrl() +'/*"]';
 
   try {
     await apiController.config({
@@ -168,7 +181,7 @@ app.get('/:tenant/:product/sso/authorize', async (req, res, next) => {
     const body = {
       response_type: 'code',
       client_id: `tenant=${tenant}&product=${product}`,
-      redirect_uri: 'http://localhost:3000/'+ tenant +'/'+ product +'/sso/callback',
+      redirect_uri: spUrl() +'/'+ tenant +'/'+ product +'/sso/callback',
       state: 'a-random-state-value',
     };
 
@@ -210,7 +223,7 @@ app.get('/:tenant/:product/sso/callback', async (req, res, next) => {
     code,
     client_id: `tenant=${tenant}&product=${product}`,
     client_secret: 'dummy',
-    redirect_uri: 'http://localhost:3000/'+ tenant +'/'+ product +'/sso/callback',
+    redirect_uri: spUrl() + '/'+ tenant +'/'+ product +'/sso/callback',
   };
 
   try {

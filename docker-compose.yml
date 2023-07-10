@@ -42,6 +42,9 @@ services:
       JWT_SECRET: SECURESTRING
       APP_HOST: localhost
       APP_PORT: 3000
+      SP_PROTOCOL: http
+      SP_HOST: localhost
+      SP_PORT: 3000
 
   idp:
     image: ssotools/idp
