@@ -1,15 +1,15 @@
 function apiUrl() {
-    // let apiUrl = '';
-    // apiUrl += import.meta.env.VITE_API_PROTOCOL;
-    // apiUrl += '://';
-    // apiUrl += import.meta.env.VITE_API_HOST;
-    // if (import.meta.env.VITE_API_PORT != null && import.meta.env.VITE_API_PORT != '') {
-    //   apiUrl += ':';
-    //   apiUrl += import.meta.env.VITE_API_PORT;
-    // }
+    let spUrl = '';
+    spUrl += import.meta.env.VITE_SP_PROTOCOL;
+    spUrl += '://';
+    spUrl += import.meta.env.VITE_SP_HOST;
+    if (import.meta.env.VITE_SP_PORT != null && import.meta.env.VITE_SP_PORT != '') {
+      spUrl += ':';
+      spUrl += import.meta.env.VITE_SP_PORT;
+    }
 
-    return 'http://localhost:3000'
-  }
+    return spUrl
+}
 
 const hosts = {
   'development': apiUrl() || 'http://localhost:3000',
